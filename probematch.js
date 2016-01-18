@@ -15,7 +15,8 @@ module.exports = function (inputLines, opts) {
     maxProbeDistance: 0.01, // max kilometers away a probe can be to be considered a match
     rbushMaxEntries: 9,
     compareBearing: true, // should bearing be used to filter matches?
-    maxBearingRange: 5 // max bearing degrees allowed between a probe and a potentially matching road
+    maxBearingRange: 5, // max bearing degrees allowed between a probe and a potentially matching road
+    bidirectionalBearing: false
   }, opts);
 
   var tree = rbush(options.rbushMaxEntries);
@@ -56,12 +57,12 @@ module.exports = function (inputLines, opts) {
       var segment = segments[hits[i].id];
       var parent = lines.features[segment.properties.lineId];
 
-      if (options.compareBearing &&
-        (bearing < segment.properties.bearing - options.maxBearingRange ||
-          bearing > segment.properties.bearing + options.maxBearingRange)
-      ) {
-        continue;
-      }
+      if (options.compareBearing && !compareBearing(
+        segment.properties.bearing,
+        options.maxBearingRange,
+        bearing,
+        options.bidirectionalBearing
+      )) continue;
 
       var p = pointOnLine(segment, pt);
       var dist = distance(pt, p, 'kilometers');
@@ -84,6 +85,25 @@ module.exports = function (inputLines, opts) {
 
   return match;
 };
+
+function compareBearing(base, range, bearing, bidirectional) {
+  var min = base - range,
+    max = base + range;
+
+  if (bearing > min && bearing < max) return true;
+
+  if (bidirectional) {
+    min = min - 180;
+    max = max - 180;
+
+    if (min < 0) min = min + 360;
+    if (max < 0) max = max + 360;
+
+    if (bearing > min && bearing < max) return true;
+  }
+
+  return false;
+}
 
 function padBbox(bbox, tolerance) {
   var sw = point([bbox[0], bbox[1]]);

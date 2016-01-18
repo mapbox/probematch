@@ -23,8 +23,8 @@ test('probematch -- including bearing limits matches', function (t) {
   var match = probematch(load());
   var probe = point([-77.03038215637207, 38.909639917926036]);
 
-  var matched = match(probe, 87);
-  t.deepEqual(matched, require(path.join(__dirname, 'fixtures/out/bearing.json')), 'matches expected output');
+  t.deepEqual(match(probe, 87), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'matches expected output');
+  t.deepEqual(match(probe, -270), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'bearing is correction to 0-360');
 
   t.deepEqual(match(probe), [], 'undefined bearing results in no matches');
   t.deepEqual(match(probe, null), [], 'null bearing results in no matches');
@@ -49,7 +49,19 @@ test('probematch -- bearing range is configurable', function (t) {
   var probe = point([-77.03038215637207, 38.909639917926036]);
 
   t.deepEqual(matchNormal(probe, 70), [], 'bearing outside range finds no matches');
-  t.deepEqual(matchExpanded(probe, 70), require(path.join(__dirname, 'fixtures/out/bearingExpanded.json')), 'expanded bearing range finds matches');
+  t.deepEqual(matchExpanded(probe, 70), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'expanded bearing range finds matches');
+
+  t.end();
+});
+
+test('probematch -- bidirectional bearing allows opposite bearing matches', function (t) {
+  var matchNormal = probematch(load());
+  var matchBi = probematch(load(), {bidirectionalBearing: true});
+  var probe = point([-77.03038215637207, 38.909639917926036]);
+
+  t.deepEqual(matchNormal(probe, 270), [], 'no matches for reverse bearing');
+  t.deepEqual(matchBi(probe, 270), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'bidirectional bearing finds matches');
+  t.deepEqual(matchBi(probe, 90), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'bidirectional bearing finds original matches too');
 
   t.end();
 });
