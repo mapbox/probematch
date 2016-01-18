@@ -47,7 +47,9 @@ module.exports = function (inputLines, opts) {
     var hits = tree.search(ext);
     var matches = [];
 
-    if (options.compareBearing && bearing === null) return [];
+    if (options.compareBearing &&
+      (bearing === null || typeof bearing === 'undefined')) return [];
+
     if (bearing && bearing < 0) bearing = bearing + 360;
 
     for (var i = 0; i < hits.length; i++) {

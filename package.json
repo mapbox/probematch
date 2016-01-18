@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint *.js test/*.js",
     "pretest": "npm run lint",
-    "test": "tap -Rspec test/*.test.js"
+    "test": "tap -Rspec test/test.js"
   },
   "eslintConfig": {
     "extends": "mourner",
@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "eslint": "^1.10.3",
-    "eslint-config-mourner": "^1.0.1"
+    "eslint-config-mourner": "^1.0.1",
+    "tap": "^5.1.1"
   }
 }
