@@ -1,0 +1,47 @@
+{
+  "name": "probematch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "probematch.js",
+  "scripts": {
+    "lint": "eslint *.js test/*.js",
+    "pretest": "npm run lint",
+    "test": "tap -Rspec test/*.test.js"
+  },
+  "eslintConfig": {
+    "extends": "mourner",
+    "rules": {
+      "strict": [
+        0
+      ],
+      "indent": [
+        2,
+        2,
+        {
+          "SwitchCase": 1
+        }
+      ],
+      "new-cap": [
+        0
+      ]
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "distance": "^1.0.0",
+    "geojson-flatten": "^0.1.0",
+    "geojson-normalize": "0.0.1",
+    "rbush": "^1.4.2",
+    "turf-bearing": "^1.0.2",
+    "turf-distance": "^1.1.0",
+    "turf-extent": "^1.0.4",
+    "turf-linestring": "^1.0.2",
+    "turf-point-on-line": "^1.0.2",
+    "xtend": "^4.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^1.10.3",
+    "eslint-config-mourner": "^1.0.1"
+  }
+}
