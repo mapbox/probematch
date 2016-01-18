@@ -21,7 +21,9 @@ var roads = {
 var match = probematch(roads, {
   compareBearing: true, // should bearing be used to filter matches?
   maxProbeDistance: 0.01, // distance filter in kilometers for probe matching
-  maxBearingRange: 5 // maximum bearing difference, in degrees, allowed for match filtering
+  maxBearingRange: 5 // maximum bearing difference, in degrees, allowed for match filtering,
+  bidirectionalBearing: false // allows matching probes to roads oriented in the opposite direction. 
+  							  // good if you know your data contains many 2-way roads
 });
 
 var probe = /* a point feature representing a probe */;

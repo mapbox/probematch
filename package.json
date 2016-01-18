@@ -2,6 +2,12 @@
   "name": "probematch",
   "version": "1.0.0",
   "description": "A small module for matching probes to road networks",
+  "keywords": [
+    "gps",
+    "match",
+    "probe",
+    "geojson"
+  ],
   "main": "probematch.js",
   "scripts": {
     "lint": "eslint *.js test/*.js",
@@ -26,7 +32,7 @@
       ]
     }
   },
-  "author": "",
+  "author": "Tim Channell",
   "license": "ISC",
   "dependencies": {
     "geojson-flatten": "^0.1.0",
