@@ -43,6 +43,8 @@ module.exports = function (inputLines, opts) {
   }
   tree.load(load);
 
+
+
   var match = function (pt, bearing) {
     var ext = padBbox(extent(pt), options.maxProbeDistance);
     var hits = tree.search(ext);
@@ -78,6 +80,24 @@ module.exports = function (inputLines, opts) {
       return 0;
     });
     return matches;
+  };
+
+  match.matchLine = function (line) {
+    var coords = line.coordinates || line.geometry.coordinates;
+
+    var firstpt, lastbearing;
+    var results = [];
+
+    for (var i = 0; i < coords.length - 1; i++) {
+      if (!firstpt) firstpt = point(coords[i]);
+      var nextpt = point(coords[i + 1]);
+      lastbearing = bearing(firstpt, nextpt);
+      results.push(match(firstpt, lastbearing));
+      firstpt = nextpt;
+    }
+    // handle last point
+    if (firstpt) results.push(match(firstpt, lastbearing));
+    return results;
   };
 
   match.tree = tree;

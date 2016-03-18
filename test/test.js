@@ -4,7 +4,7 @@ var path = require('path');
 var point = require('turf-point');
 
 function load() {
-  return require(path.join(__dirname, 'fixtures/roads.input.json'));
+  return require(path.join(__dirname, 'fixtures/in/roads.json'));
 }
 
 
@@ -63,5 +63,18 @@ test('probematch -- bidirectional bearing allows opposite bearing matches', func
   t.deepEqual(matchBi(probe, 270), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'bidirectional bearing finds matches');
   t.deepEqual(matchBi(probe, 90), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'bidirectional bearing finds original matches too');
 
+  t.end();
+});
+
+test('probematch -- can match lines to roads', function (t) {
+  var match = probematch(load(), {bidirectionalBearing: true, maxProbeDistance: 0.1, maxBearingRange: 60});
+  var line = require('./fixtures/in/line.json');
+  var matches = match.matchLine(line);
+  var bestMatches = matches.map(function (m) {
+    if (m[0]) return m[0].segment;
+    return null;
+  });
+
+  t.deepEqual(bestMatches, require('./fixtures/out/line.json'), 'all points in line matched expected segments');
   t.end();
 });
