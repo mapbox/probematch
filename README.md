@@ -22,7 +22,7 @@ var match = probematch(roads, {
   compareBearing: true, // should bearing be used to filter matches?
   maxProbeDistance: 0.01, // distance filter in kilometers for probe matching
   maxBearingRange: 5, // maximum bearing difference, in degrees, allowed for match filtering,
-  bidirectionalBearing: false // allows matching probes to roads oriented in the opposite direction. 
+  bidirectionalBearing: false // allows matching probes to roads oriented in the opposite direction.
   							  // good if you know your data contains many 2-way roads
 });
 
@@ -31,6 +31,22 @@ var probeBearing  = /* a bearing in degrees */
 
 var results = match(probe, probeBearing);
 ```
+
+#### lines
+
+*probematch* can also match all points in a line automatically, including bearing calculation between segments. This is ideal when working with data already assembled into traces.
+
+```js
+var probematch = require('probematch');
+
+var roads = //;
+var match = probematch(roads, { /* options */});
+
+var results = match.matchLine(line);
+```
+
+When matching lines, the output is an array of the match results for each coordinate of the line, in the order of the original line coordinates.
+
 
 ### output
 
