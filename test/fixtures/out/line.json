@@ -1,359 +1,70 @@
 [
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.03161597251892,
-                    38.90966913770327
-                ],
-                [
-                    -77.03089714050293,
-                    38.90966913770327
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 89.99977425304945,
-            "lineId": 0,
-            "segmentId": 0
-        },
-        "type": "Feature"
+      "lineId": 0,
+      "segmentId": 0
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.03161597251892,
-                    38.90966913770327
-                ],
-                [
-                    -77.03089714050293,
-                    38.90966913770327
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 89.99977425304945,
-            "lineId": 0,
-            "segmentId": 0
-        },
-        "type": "Feature"
+      "lineId": 0,
+      "segmentId": 0
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.03161597251892,
-                    38.90966913770327
-                ],
-                [
-                    -77.03089714050293,
-                    38.90966913770327
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 89.99977425304945,
-            "lineId": 0,
-            "segmentId": 0
-        },
-        "type": "Feature"
+      "lineId": 0,
+      "segmentId": 0
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.03161597251892,
-                    38.90966913770327
-                ],
-                [
-                    -77.03089714050293,
-                    38.90966913770327
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 89.99977425304945,
-            "lineId": 0,
-            "segmentId": 0
-        },
-        "type": "Feature"
+      "lineId": 0,
+      "segmentId": 0
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.03089714050293,
-                    38.90966913770327
-                ],
-                [
-                    -77.03032582998276,
-                    38.909671224829744
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 89.73082828871009,
-            "lineId": 0,
-            "segmentId": 1
-        },
-        "type": "Feature"
+      "lineId": 0,
+      "segmentId": 1
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.03089714050293,
-                    38.90966913770327
-                ],
-                [
-                    -77.03032582998276,
-                    38.909671224829744
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 89.73082828871009,
-            "lineId": 0,
-            "segmentId": 1
-        },
-        "type": "Feature"
+      "lineId": 0,
+      "segmentId": 1
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.03089714050293,
-                    38.90966913770327
-                ],
-                [
-                    -77.03032582998276,
-                    38.909671224829744
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 89.73082828871009,
-            "lineId": 0,
-            "segmentId": 1
-        },
-        "type": "Feature"
+      "lineId": 0,
+      "segmentId": 1
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.0303338766098,
-                    38.90966913770327
-                ],
-                [
-                    -77.03032851219177,
-                    38.9095480842622
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 178.02506430572873,
-            "lineId": 2,
-            "segmentId": 3
-        },
-        "type": "Feature"
+      "lineId": 2,
+      "segmentId": 3
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.03032851219177,
-                    38.9095480842622
-                ],
-                [
-                    -77.03027486801147,
-                    38.90943120488183
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 160.34615909377263,
-            "lineId": 2,
-            "segmentId": 4
-        },
-        "type": "Feature"
+      "lineId": 2,
+      "segmentId": 4
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.03027486801147,
-                    38.90942911774829
-                ],
-                [
-                    -77.0308569073677,
-                    38.90922457836352
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 245.69563351893134,
-            "lineId": 1,
-            "segmentId": 0
-        },
-        "type": "Feature"
+      "lineId": 1,
+      "segmentId": 0
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.03027486801147,
-                    38.90942911774829
-                ],
-                [
-                    -77.0308569073677,
-                    38.90922457836352
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 245.69563351893134,
-            "lineId": 1,
-            "segmentId": 0
-        },
-        "type": "Feature"
+      "lineId": 1,
+      "segmentId": 0
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.03027486801147,
-                    38.90942911774829
-                ],
-                [
-                    -77.0308569073677,
-                    38.90922457836352
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 245.69563351893134,
-            "lineId": 1,
-            "segmentId": 0
-        },
-        "type": "Feature"
+      "lineId": 1,
+      "segmentId": 0
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.0308569073677,
-                    38.90922457836352
-                ],
-                [
-                    -77.0314309000969,
-                    38.90902629982592
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 246.06253767438855,
-            "lineId": 1,
-            "segmentId": 1
-        },
-        "type": "Feature"
+      "lineId": 1,
+      "segmentId": 1
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.0308569073677,
-                    38.90922457836352
-                ],
-                [
-                    -77.0314309000969,
-                    38.90902629982592
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 246.06253767438855,
-            "lineId": 1,
-            "segmentId": 1
-        },
-        "type": "Feature"
+      "lineId": 1,
+      "segmentId": 1
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.0314309000969,
-                    38.90902629982592
-                ],
-                [
-                    -77.03194320201874,
-                    38.908842630791696
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 245.26307795327753,
-            "lineId": 1,
-            "segmentId": 2
-        },
-        "type": "Feature"
+      "lineId": 1,
+      "segmentId": 2
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.0314309000969,
-                    38.90902629982592
-                ],
-                [
-                    -77.03194320201874,
-                    38.908842630791696
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 245.26307795327753,
-            "lineId": 1,
-            "segmentId": 2
-        },
-        "type": "Feature"
+      "lineId": 1,
+      "segmentId": 2
     },
     {
-        "geometry": {
-            "coordinates": [
-                [
-                    -77.0314309000969,
-                    38.90902629982592
-                ],
-                [
-                    -77.03194320201874,
-                    38.908842630791696
-                ]
-            ],
-            "type": "LineString"
-        },
-        "properties": {
-            "bearing": 245.26307795327753,
-            "lineId": 1,
-            "segmentId": 2
-        },
-        "type": "Feature"
+      "lineId": 1,
+      "segmentId": 2
     }
 ]

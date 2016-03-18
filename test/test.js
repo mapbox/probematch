@@ -71,7 +71,7 @@ test('probematch -- can match lines to roads', function (t) {
   var line = require('./fixtures/in/line.json');
   var matches = match.matchLine(line);
   var bestMatches = matches.map(function (m) {
-    if (m[0]) return m[0].segment;
+    if (m[0]) return {lineId: m[0].segment.properties.lineId, segmentId: m[0].segment.properties.segmentId};
     return null;
   });
 
