@@ -1,6 +1,6 @@
 [
     {
-        "distance": 0.0034593386931526743,
+        "distance": 0.00346,
         "line": {
             "geometry": {
                 "coordinates": [
@@ -37,7 +37,7 @@
                 "type": "LineString"
             },
             "properties": {
-                "bearing": 89.73082828871009,
+                "bearing": 89.7,
                 "lineId": 0,
                 "segmentId": 1
             },

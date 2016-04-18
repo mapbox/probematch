@@ -7,6 +7,20 @@ function load() {
   return require(path.join(__dirname, 'fixtures/in/roads.json'));
 }
 
+// reduce precision so tests aren't as finnicky
+function reducePrecision(matches) {
+  function toPrecision(number, precision) {
+    var power = Math.pow(10, precision);
+    return Math.round(number * power) / power;
+  }
+
+  for (var i = 0; i < matches.length; i++) {
+    matches[i].distance = toPrecision(matches[i].distance, 5);
+    matches[i].segment.properties.bearing = toPrecision(matches[i].segment.properties.bearing, 1);
+  }
+  return matches;
+}
+
 
 test('probematch -- returns scored roads', function (t) {
   var match = probematch(load(), {compareBearing: false});
@@ -14,7 +28,7 @@ test('probematch -- returns scored roads', function (t) {
 
   var matched = match(probe);
 
-  t.deepEqual(matched, require(path.join(__dirname, 'fixtures/out/scored.json')), 'matches expected output');
+  t.deepEqual(reducePrecision(matched), require(path.join(__dirname, 'fixtures/out/scored.json')), 'matches expected output');
   t.ok(matched[0].distance < matched[1].distance, 'is sorted by distance');
   t.end();
 });
@@ -23,8 +37,8 @@ test('probematch -- including bearing limits matches', function (t) {
   var match = probematch(load());
   var probe = point([-77.03038215637207, 38.909639917926036]);
 
-  t.deepEqual(match(probe, 87), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'matches expected output');
-  t.deepEqual(match(probe, -270), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'bearing is correction to 0-360');
+  t.deepEqual(reducePrecision(match(probe, 87)), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'matches expected output');
+  t.deepEqual(reducePrecision(match(probe, -270)), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'bearing is correction to 0-360');
 
   t.deepEqual(match(probe), [], 'undefined bearing results in no matches');
   t.deepEqual(match(probe, null), [], 'null bearing results in no matches');
@@ -38,7 +52,7 @@ test('probematch -- match distance is configurable', function (t) {
   var matchFar = probematch(load(), {maxProbeDistance: 0.13});
 
   t.deepEqual(matchNormal(probe, 89), [], 'no matches for a far away probe');
-  t.deepEqual(matchFar(probe, 89), require(path.join(__dirname, 'fixtures/out/bearingConfigured.json')), 'matches expected output');
+  t.deepEqual(reducePrecision(matchFar(probe, 89)), require(path.join(__dirname, 'fixtures/out/bearingConfigured.json')), 'matches expected output');
 
   t.end();
 });
@@ -49,7 +63,7 @@ test('probematch -- bearing range is configurable', function (t) {
   var probe = point([-77.03038215637207, 38.909639917926036]);
 
   t.deepEqual(matchNormal(probe, 70), [], 'bearing outside range finds no matches');
-  t.deepEqual(matchExpanded(probe, 70), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'expanded bearing range finds matches');
+  t.deepEqual(reducePrecision(matchExpanded(probe, 70)), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'expanded bearing range finds matches');
 
   t.end();
 });
@@ -60,8 +74,8 @@ test('probematch -- bidirectional bearing allows opposite bearing matches', func
   var probe = point([-77.03038215637207, 38.909639917926036]);
 
   t.deepEqual(matchNormal(probe, 270), [], 'no matches for reverse bearing');
-  t.deepEqual(matchBi(probe, 270), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'bidirectional bearing finds matches');
-  t.deepEqual(matchBi(probe, 90), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'bidirectional bearing finds original matches too');
+  t.deepEqual(reducePrecision(matchBi(probe, 270)), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'bidirectional bearing finds matches');
+  t.deepEqual(reducePrecision(matchBi(probe, 90)), require(path.join(__dirname, 'fixtures/out/bearing.json')), 'bidirectional bearing finds original matches too');
 
   t.end();
 });

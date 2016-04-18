@@ -1,6 +1,6 @@
 [
     {
-        "distance": 0.0034593386931526743,
+        "distance": 0.00346,
         "line": {
             "geometry": {
                 "coordinates": [
@@ -37,7 +37,7 @@
                 "type": "LineString"
             },
             "properties": {
-                "bearing": 89.73082828871009,
+                "bearing": 89.7,
                 "lineId": 0,
                 "segmentId": 1
             },
@@ -45,7 +45,7 @@
         }
     },
     {
-        "distance": 0.004310503531633614,
+        "distance": 0.00431,
         "line": {
             "geometry": {
                 "coordinates": [
@@ -102,7 +102,7 @@
                 "type": "LineString"
             },
             "properties": {
-                "bearing": 178.02506430572873,
+                "bearing": 178.0,
                 "lineId": 2,
                 "segmentId": 3
             },
@@ -110,7 +110,7 @@
         }
     },
     {
-        "distance": 0.005293852330579859,
+        "distance": 0.0053,
         "line": {
             "geometry": {
                 "coordinates": [
@@ -167,7 +167,7 @@
                 "type": "LineString"
             },
             "properties": {
-                "bearing": 188.7461706857166,
+                "bearing": 188.7,
                 "lineId": 2,
                 "segmentId": 2
             },

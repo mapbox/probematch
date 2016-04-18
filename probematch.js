@@ -3,12 +3,10 @@ var extent = require('turf-extent');
 var xtend = require('xtend');
 var flatten = require('geojson-flatten');
 var normalize = require('geojson-normalize');
-var point = require('turf-point');
 var linestring = require('turf-linestring');
-var destination = require('turf-destination');
 var pointOnLine = require('turf-point-on-line');
-var distance = require('turf-distance');
-var bearing = require('turf-bearing');
+var point = require('turf-point');
+var cheapRuler = require('cheap-ruler');
 
 module.exports = function (inputLines, opts) {
   var options = xtend({
@@ -26,13 +24,14 @@ module.exports = function (inputLines, opts) {
 
   for (var i = 0; i < lines.features.length; i++) {
     var coords = lines.features[i].geometry.coordinates;
+    var ruler = cheapRuler(coords[0][1], 'kilometers');
     for (var j = 0; j < coords.length - 1; j++) {
       var seg = linestring([coords[j], coords[j + 1]], {
         lineId: i,
         segmentId: j
       });
-      var ext = padBbox(extent(seg), options.maxProbeDistance);
-      seg.properties.bearing = bearing(point(coords[j]), point(coords[j + 1]));
+      var ext = ruler.bufferBBox(extent(seg), options.maxProbeDistance);
+      seg.properties.bearing = ruler.bearing(coords[j], coords[j + 1]);
       if (seg.properties.bearing < 0) seg.properties.bearing += 360;
 
       ext.id = segments.length;
@@ -43,10 +42,13 @@ module.exports = function (inputLines, opts) {
   }
   tree.load(load);
 
+  var match = function (pt, bearing, ruler) {
+    var ptCoordinates = pt.geometry ? pt.geometry.coordinates : pt;
+    pt = pt.geometry ? pt : point(pt);
 
+    if (!ruler) ruler = cheapRuler(ptCoordinates[1], 'kilometers');
 
-  var match = function (pt, bearing) {
-    var ext = padBbox(extent(pt), options.maxProbeDistance);
+    var ext = [ptCoordinates[0], ptCoordinates[1], ptCoordinates[0], ptCoordinates[1]];
     var hits = tree.search(ext);
     var matches = [];
 
@@ -67,7 +69,7 @@ module.exports = function (inputLines, opts) {
       )) continue;
 
       var p = pointOnLine(segment, pt);
-      var dist = distance(pt, p, 'kilometers');
+      var dist = ruler.distance(ptCoordinates, p.geometry.coordinates);
 
       if (dist <= options.maxProbeDistance) {
         matches.push({segment: segment, line: parent, distance: dist});
@@ -75,8 +77,8 @@ module.exports = function (inputLines, opts) {
     }
 
     matches.sort(function (a, b) {
-      if (a.distance < b.distance) { return -1; }
-      if (a.distance > b.distance) { return 1; }
+      if (a.distance < b.distance) return -1;
+      if (a.distance > b.distance) return 1;
       return 0;
     });
     return matches;
@@ -85,18 +87,17 @@ module.exports = function (inputLines, opts) {
   match.matchLine = function (line) {
     var coords = line.coordinates || line.geometry.coordinates;
 
-    var firstpt, lastbearing;
+    var lastbearing;
     var results = [];
 
+    var ruler = cheapRuler(coords[0][1], 'kilometers');
+
     for (var i = 0; i < coords.length - 1; i++) {
-      if (!firstpt) firstpt = point(coords[i]);
-      var nextpt = point(coords[i + 1]);
-      lastbearing = bearing(firstpt, nextpt);
-      results.push(match(firstpt, lastbearing));
-      firstpt = nextpt;
+      lastbearing = ruler.bearing(coords[i], coords[i + 1]);
+      results.push(match(coords[i], lastbearing, ruler));
     }
     // handle last point
-    if (firstpt) results.push(match(firstpt, lastbearing));
+    if (coords.length > 0) results.push(match(coords[coords.length - 1], lastbearing, ruler));
     return results;
   };
 
@@ -123,18 +124,4 @@ function compareBearing(base, range, bearing, bidirectional) {
   }
 
   return false;
-}
-
-function padBbox(bbox, tolerance) {
-  var sw = point([bbox[0], bbox[1]]);
-  var ne = point([bbox[2], bbox[3]]);
-  var newSw = destination(sw, tolerance, -135, 'kilometers');
-  var newNe = destination(ne, tolerance, 45, 'kilometers');
-
-  return [
-    newSw.geometry.coordinates[0],
-    newSw.geometry.coordinates[1],
-    newNe.geometry.coordinates[0],
-    newNe.geometry.coordinates[1]
-  ];
 }
