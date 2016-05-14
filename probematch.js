@@ -4,7 +4,6 @@ var xtend = require('xtend');
 var flatten = require('geojson-flatten');
 var normalize = require('geojson-normalize');
 var linestring = require('turf-linestring');
-var pointOnLine = require('turf-point-on-line');
 var point = require('turf-point');
 var cheapRuler = require('cheap-ruler');
 
@@ -25,11 +24,13 @@ module.exports = function (inputLines, opts) {
   for (var i = 0; i < lines.features.length; i++) {
     var coords = lines.features[i].geometry.coordinates;
     var ruler = cheapRuler(coords[0][1], 'kilometers');
+
     for (var j = 0; j < coords.length - 1; j++) {
       var seg = linestring([coords[j], coords[j + 1]], {
         lineId: i,
         segmentId: j
       });
+
       var ext = ruler.bufferBBox(extent(seg), options.maxProbeDistance);
       seg.properties.bearing = ruler.bearing(coords[j], coords[j + 1]);
       if (seg.properties.bearing < 0) seg.properties.bearing += 360;
@@ -68,8 +69,8 @@ module.exports = function (inputLines, opts) {
         options.bidirectionalBearing
       )) continue;
 
-      var p = pointOnLine(segment, pt);
-      var dist = ruler.distance(ptCoordinates, p.geometry.coordinates);
+      var p = ruler.pointOnLine(segment.geometry.coordinates, ptCoordinates);
+      var dist = ruler.distance(ptCoordinates, p);
 
       if (dist <= options.maxProbeDistance) {
         matches.push({segment: segment, line: parent, distance: dist});

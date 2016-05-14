@@ -84,6 +84,7 @@ test('probematch -- can match lines to roads', function (t) {
   var match = probematch(load(), {bidirectionalBearing: true, maxProbeDistance: 0.1, maxBearingRange: 60});
   var line = require('./fixtures/in/line.json');
   var matches = match.matchLine(line);
+  console.log(JSON.stringify(matches[0][0]));
   var bestMatches = matches.map(function (m) {
     if (m[0]) return {lineId: m[0].segment.properties.lineId, segmentId: m[0].segment.properties.segmentId};
     return null;
