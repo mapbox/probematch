@@ -39,9 +39,9 @@ var matcher = probematch(roads, {
 key | type | default | description
 --- | --- | --- | ---
 compareBearing | boolean | true | Should bearing of probes be used to evaluate match quality? <br /><br />If true, the bearing of the probe is compared to the bearing of each possible matching road segment. This ensures probes don't match cross-streets that obviously aren't the same as the probe's direction of travel
-maxBearingRange | number | 5 | Maximum amount in degrees that a probe's bearing may differ from a road segments when using `compareBearing`
+maxBearingRange | number | 5 | Maximum amount in degrees that a probe's bearing may differ from a road segment's when using `compareBearing`
 bidirectionalBearing | boolean | false | Should bearing matches allow for probes to be moving in the opposite direction of a road segment's bearing? This should be true if the road network includes 2-way roads.
-maxProbeDistance | number | 0.01 | Maximum distance in kilometers that a probe may be from a road in order to consider it a possible match. Prevents matching probes to roads that are too far away from them.
+maxProbeDistance | number | 0.01 | Maximum distance in kilometers that a probe may be from a road segment in order to consider it a possible match. Prevents matching probes to segments that are too far away from them.
 
 
 
@@ -106,9 +106,9 @@ key | type | description
 var probematch = require('probematch');
 
 var roads = /* FeatureCollection of road geometries */;
-var matcher = probematch(roads, {/* confi(roads, { /* configuration */});
+var matcher = probematch(roads, {/* configuration */});
 
 var results = matcher.matchTrace(line);
 ```
 
-`matchTrace` returns an array of `match` results. The order of results is equivalent to the order of the coordinates in the input trace. This means that the zeroeth element in the `matchTrace` result is an array of possible matches for the zeroeth coordinate, and so on.
+`matchTrace` returns an array of `match` results. The order of results is the same as the order of the coordinates in the input trace. This means that the zeroeth element in the `matchTrace` result is an array of possible matches for the zeroeth coordinate, and so on.
