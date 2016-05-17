@@ -80,16 +80,16 @@ test('probematch -- bidirectional bearing allows opposite bearing matches', func
   t.end();
 });
 
-test('probematch -- can match lines to roads', function (t) {
+test('probematch -- can match a trace to roads', function (t) {
   var match = probematch(load(), {bidirectionalBearing: true, maxProbeDistance: 0.1, maxBearingRange: 60});
-  var line = require('./fixtures/in/line.json');
-  var matches = match.matchLine(line);
-  console.log(JSON.stringify(matches[0][0]));
+
+  var line = require('./fixtures/in/trace.json');
+  var matches = match.matchTrace(line);
   var bestMatches = matches.map(function (m) {
-    if (m[0]) return {lineId: m[0].segment.properties.lineId, segmentId: m[0].segment.properties.segmentId};
+    if (m[0]) return {roadId: m[0].segment.properties.roadId, segmentId: m[0].segment.properties.segmentId};
     return null;
   });
 
-  t.deepEqual(bestMatches, require('./fixtures/out/line.json'), 'all points in line matched expected segments');
+  t.deepEqual(bestMatches, require('./fixtures/out/trace.json'), 'all points in trace matched expected segments');
   t.end();
 });

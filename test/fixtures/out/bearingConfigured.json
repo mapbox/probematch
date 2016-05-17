@@ -1,7 +1,7 @@
 [
     {
         "distance": 0.12175,
-        "line": {
+        "road": {
             "geometry": {
                 "coordinates": [
                     [
@@ -38,7 +38,7 @@
             },
             "properties": {
                 "bearing": 90.0,
-                "lineId": 0,
+                "roadId": 0,
                 "segmentId": 0
             },
             "type": "Feature"
