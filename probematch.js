@@ -7,6 +7,12 @@ var linestring = require('turf-linestring');
 var point = require('turf-point');
 var cheapRuler = require('cheap-ruler');
 
+/**
+ * Index `roadNetwork` and return the matcher function
+ *
+ * @param      {FeatureCollection}  roadNetwork  FeatureCollection of linestrings representing roads
+ * @param      {object}  opts         Configuration object
+ */
 module.exports = function (roadNetwork, opts) {
   var options = xtend({
     maxProbeDistance: 0.01, // max kilometers away a probe can be to be considered a match
@@ -20,6 +26,7 @@ module.exports = function (roadNetwork, opts) {
   var network = normalize(flatten(roadNetwork));
   var load = [];
   var segments = [];
+
 
   for (var i = 0; i < network.features.length; i++) {
     var coords = network.features[i].geometry.coordinates;
@@ -65,8 +72,8 @@ module.exports = function (roadNetwork, opts) {
 
       if (options.compareBearing && !compareBearing(
         segment.properties.bearing,
-        options.maxBearingRange,
         bearing,
+        options.maxBearingRange,
         options.bidirectionalBearing
       )) continue;
 
@@ -109,13 +116,28 @@ module.exports = function (roadNetwork, opts) {
   return match;
 };
 
-function compareBearing(base, range, bearing, bidirectional) {
+/**
+ * Compare bearing `base` to `bearing`, to determine if they are
+ * close enough to eachother to be considered matching. `range` is
+ * number of degrees difference that is allowed between the bearings.
+ * `allowReverse` allows bearings that are 180 degrees +/- `range` to be
+ * considered matching.
+ *
+ * TODO: proper bearing wrapping (deal with negative bearings)
+ *
+ * @param      {number}   base           Base bearing
+ * @param      {number}   range          The range
+ * @param      {number}   bearing        Bearing to compare to base
+ * @param      {boolean}  allowReverse   Should opposite bearings be allowed to match?
+ * @return     {boolean}  Whether or not base and bearing match
+ */
+function compareBearing(base, bearing, range, allowReverse) {
   var min = base - range,
     max = base + range;
 
   if (bearing > min && bearing < max) return true;
 
-  if (bidirectional) {
+  if (allowReverse) {
     min = min - 180;
     max = max - 180;
 
