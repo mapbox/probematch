@@ -1,7 +1,7 @@
 [
     {
         "distance": 0.0034593386931526743,
-        "line": {
+        "road": {
             "geometry": {
                 "coordinates": [
                     [
@@ -38,7 +38,7 @@
             },
             "properties": {
                 "bearing": 89.73082828871009,
-                "lineId": 0,
+                "roadId": 0,
                 "segmentId": 1
             },
             "type": "Feature"
@@ -46,7 +46,7 @@
     },
     {
         "distance": 0.004310503531633614,
-        "line": {
+        "road": {
             "geometry": {
                 "coordinates": [
                     [
@@ -103,7 +103,7 @@
             },
             "properties": {
                 "bearing": 178.02506430572873,
-                "lineId": 2,
+                "roadId": 2,
                 "segmentId": 3
             },
             "type": "Feature"
@@ -111,7 +111,7 @@
     },
     {
         "distance": 0.005293852330579859,
-        "line": {
+        "road": {
             "geometry": {
                 "coordinates": [
                     [
@@ -168,7 +168,7 @@
             },
             "properties": {
                 "bearing": 188.7461706857166,
-                "lineId": 2,
+                "roadId": 2,
                 "segmentId": 2
             },
             "type": "Feature"

@@ -1,70 +1,70 @@
 [
     {
-      "lineId": 0,
+      "roadId": 0,
       "segmentId": 0
     },
     {
-      "lineId": 0,
+      "roadId": 0,
       "segmentId": 0
     },
     {
-      "lineId": 0,
+      "roadId": 0,
       "segmentId": 0
     },
     {
-      "lineId": 0,
+      "roadId": 0,
       "segmentId": 0
     },
     {
-      "lineId": 0,
+      "roadId": 0,
       "segmentId": 1
     },
     {
-      "lineId": 0,
+      "roadId": 0,
       "segmentId": 1
     },
     {
-      "lineId": 0,
+      "roadId": 0,
       "segmentId": 1
     },
     {
-      "lineId": 2,
+      "roadId": 2,
       "segmentId": 3
     },
     {
-      "lineId": 2,
+      "roadId": 2,
       "segmentId": 4
     },
     {
-      "lineId": 1,
+      "roadId": 1,
       "segmentId": 0
     },
     {
-      "lineId": 1,
+      "roadId": 1,
       "segmentId": 0
     },
     {
-      "lineId": 1,
+      "roadId": 1,
       "segmentId": 0
     },
     {
-      "lineId": 1,
+      "roadId": 1,
       "segmentId": 1
     },
     {
-      "lineId": 1,
+      "roadId": 1,
       "segmentId": 1
     },
     {
-      "lineId": 1,
+      "roadId": 1,
       "segmentId": 2
     },
     {
-      "lineId": 1,
+      "roadId": 1,
       "segmentId": 2
     },
     {
-      "lineId": 1,
+      "roadId": 1,
       "segmentId": 2
     }
 ]

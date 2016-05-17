@@ -10,7 +10,7 @@ var pointOnLine = require('turf-point-on-line');
 var distance = require('turf-distance');
 var bearing = require('turf-bearing');
 
-module.exports = function (inputLines, opts) {
+module.exports = function (roadNetwork, opts) {
   var options = xtend({
     maxProbeDistance: 0.01, // max kilometers away a probe can be to be considered a match
     rbushMaxEntries: 9,
@@ -20,15 +20,15 @@ module.exports = function (inputLines, opts) {
   }, opts);
 
   var tree = rbush(options.rbushMaxEntries);
-  var lines = normalize(flatten(inputLines));
+  var network = normalize(flatten(roadNetwork));
   var load = [];
   var segments = [];
 
-  for (var i = 0; i < lines.features.length; i++) {
-    var coords = lines.features[i].geometry.coordinates;
+  for (var i = 0; i < network.features.length; i++) {
+    var coords = network.features[i].geometry.coordinates;
     for (var j = 0; j < coords.length - 1; j++) {
       var seg = linestring([coords[j], coords[j + 1]], {
-        lineId: i,
+        roadId: i,
         segmentId: j
       });
       var ext = padBbox(extent(seg), options.maxProbeDistance);
@@ -45,8 +45,8 @@ module.exports = function (inputLines, opts) {
 
 
 
-  var match = function (pt, bearing) {
-    var ext = padBbox(extent(pt), options.maxProbeDistance);
+  var match = function (probe, bearing) {
+    var ext = padBbox(extent(probe), options.maxProbeDistance);
     var hits = tree.search(ext);
     var matches = [];
 
@@ -57,7 +57,7 @@ module.exports = function (inputLines, opts) {
 
     for (var i = 0; i < hits.length; i++) {
       var segment = segments[hits[i].id];
-      var parent = lines.features[segment.properties.lineId];
+      var parent = network.features[segment.properties.roadId];
 
       if (options.compareBearing && !compareBearing(
         segment.properties.bearing,
@@ -66,11 +66,11 @@ module.exports = function (inputLines, opts) {
         options.bidirectionalBearing
       )) continue;
 
-      var p = pointOnLine(segment, pt);
-      var dist = distance(pt, p, 'kilometers');
+      var p = pointOnLine(segment, probe);
+      var dist = distance(probe, p, 'kilometers');
 
       if (dist <= options.maxProbeDistance) {
-        matches.push({segment: segment, line: parent, distance: dist});
+        matches.push({segment: segment, road: parent, distance: dist});
       }
     }
 
@@ -82,8 +82,8 @@ module.exports = function (inputLines, opts) {
     return matches;
   };
 
-  match.matchLine = function (line) {
-    var coords = line.coordinates || line.geometry.coordinates;
+  match.matchTrace = function (trace) {
+    var coords = trace.coordinates || trace.geometry.coordinates;
 
     var firstpt, lastbearing;
     var results = [];
