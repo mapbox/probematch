@@ -35,7 +35,7 @@
   "author": "Tim Channell",
   "license": "ISC",
   "dependencies": {
-    "cheap-ruler": "^1.2.0",
+    "cheap-ruler": "^2.4.0",
     "geojson-flatten": "^0.1.0",
     "geojson-normalize": "0.0.1",
     "rbush": "^1.4.2",

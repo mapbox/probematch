@@ -144,7 +144,7 @@ function filterMatchHits(options, network, segments, hits, probeCoords, bearing,
     )) continue;
 
     var p = ruler.pointOnLine(segment.geometry.coordinates, probeCoords);
-    var dist = ruler.distance(probeCoords, p);
+    var dist = ruler.distance(probeCoords, p.point);
 
     if (dist <= options.maxProbeDistance) matches.push({segment: segment, road: parent, distance: dist});
   }

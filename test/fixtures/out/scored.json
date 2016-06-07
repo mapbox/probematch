@@ -1,6 +1,6 @@
 [
     {
-        "distance": 0.00346,
+        "distance": 0.00345,
         "road": {
             "geometry": {
                 "coordinates": [
@@ -45,7 +45,7 @@
         }
     },
     {
-        "distance": 0.00429,
+        "distance": 0.0043,
         "road": {
             "geometry": {
                 "coordinates": [
@@ -167,7 +167,7 @@
                 "type": "LineString"
             },
             "properties": {
-                "bearing": 188.7,
+                "bearing": 188.8,
                 "roadId": 2,
                 "segmentId": 2
             },
