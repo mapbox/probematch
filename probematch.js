@@ -8,8 +8,8 @@ var cheapRuler = require('cheap-ruler');
 /**
  * Index `roadNetwork` and return the matcher function
  *
- * @param      {FeatureCollection}  roadNetwork  FeatureCollection of linestrings representing roads
- * @param      {object}  opts         Configuration object
+ * @param      {FeatureCollection}    roadNetwork  FeatureCollection of linestrings representing roads
+ * @param      {object}               options      probematch configuration object
  */
 module.exports = function (roadNetwork, opts) {
   var options = xtend({
@@ -22,9 +22,9 @@ module.exports = function (roadNetwork, opts) {
 
   var segments = [], load = [];
   var tree = rbush(options.rbushMaxEntries);
-  var network = normalize(flatten(roadNetwork));
+  var network = normalize(flatten(roadNetwork)).features;
 
-  prepSegments(options, segments, load, network.features);
+  prepSegments(options, segments, load, network);
   tree.load(load);
 
   var matcher = function (probe, bearing) {
@@ -43,15 +43,15 @@ module.exports = function (roadNetwork, opts) {
  * @param      {object}  options          probematch configuration object
  * @param      {array}   segments         Array that will hold segment linestrings
  * @param      {array}   load             Array that will hold bboxes to index in rbush
- * @param      {array}   networkFeatures  Array of the road network's linestring features
+ * @param      {array}   network          Array of the road network's linestring features
  */
-function prepSegments(options, segments, load, networkFeatures) {
-  for (var i = 0; i < networkFeatures.length; i++) {
-    var coords = networkFeatures[i].geometry.coordinates;
+function prepSegments(options, segments, load, network) {
+  for (var i = 0; i < network.length; i++) {
+    var coords = network[i].geometry.coordinates;
     var ruler = cheapRuler(coords[0][1], 'kilometers');
 
     for (var j = 0; j < coords.length - 1; j++) {
-      prepSegment(options, segments, load, i, j, coords[j], coords[j + 1], ruler, options.maxProbeDistance);
+      prepSegment(options, segments, load, i, j, coords[j], coords[j + 1], ruler);
     }
   }
 }
@@ -86,6 +86,18 @@ function prepSegment(options, segments, load, roadId, segmentId, a, b, ruler) {
   load.push(ext);
 }
 
+/**
+ * Match a probe to the road network
+ *
+ * @param  {object}                     options   probematch configuration object
+ * @param  {array}                      network   Array of the road network's linestring features
+ * @param  {array}                      segments  Array holding linestrings of each segment in the road network
+ * @param  {object}                     tree      Rbush tree of segment bounding boxes
+ * @param  {Point|Feature<Point>|array} probe     Probe to match to the road network
+ * @param  {number}                     bearing   Bearing of the probe
+ * @param  {object}                     ruler     A cheap ruler instance
+ * @return {array}  matches for the probe
+ */
 function match(options, network, segments, tree, probe, bearing, ruler) {
   var probeCoords = probe.geometry ? probe.geometry.coordinates : probe;
 
@@ -97,7 +109,7 @@ function match(options, network, segments, tree, probe, bearing, ruler) {
   var ext = [probeCoords[0], probeCoords[1], probeCoords[0], probeCoords[1]];
   var hits = tree.search(ext);
 
-  var matches = filterMatchHits(options, network.features, segments, hits, probeCoords, bearing, ruler);
+  var matches = filterMatchHits(options, network, segments, hits, probeCoords, bearing, ruler);
 
   matches.sort(function (a, b) {
     return a.distance - b.distance;
@@ -110,19 +122,19 @@ function match(options, network, segments, tree, probe, bearing, ruler) {
  * by checking bbox hits against the road network
  *
  * @param      {object}  options          probematch configuration object
- * @param      {array}   networkFeatures  Array of the road network's linestring features
+ * @param      {array}   network          Array of the road network's linestring features
  * @param      {array}   segments         Array holding linestrings of each segment in the road network
  * @param      {array}   hits             Array of possible matches from `tree.search`
  * @param      {array}   probeCoords      Probe's [x, y] coordinates
  * @param      {number}  bearing          Probe's bearing
  * @param      {object}  ruler            A cheap-ruler instance
  */
-function filterMatchHits(options, networkFeatures, segments, hits, probeCoords, bearing, ruler) {
+function filterMatchHits(options, network, segments, hits, probeCoords, bearing, ruler) {
   var matches = [];
   for (var i = 0; i < hits.length; i++) {
     var hit = hits[i];
     var segment = segments[hit.id];
-    var parent = networkFeatures[segment.properties.roadId];
+    var parent = network[segment.properties.roadId];
 
     if (options.compareBearing && !compareBearing(
       segment.properties.bearing,
@@ -139,6 +151,16 @@ function filterMatchHits(options, networkFeatures, segments, hits, probeCoords, 
   return matches;
 }
 
+/**
+ * Match a trace to the road network
+ *
+ * @param      {object}                         options   probematch configuration object
+ * @param      {array}                          network   Array of the road network's linestring features
+ * @param      {array}                          segments  Array holding linestrings of each segment in the road network
+ * @param      {object}                         tree      Rbush tree of segment bounding boxes
+ * @param      {LineString|Feature<LineString>} trace     Trace to match to the network
+ * @return     {array}   matches for each point of `trace`
+ */
 function matchTrace(options, network, segments, tree, trace) {
   var coords = trace.coordinates || trace.geometry.coordinates;
   var lastbearing;
@@ -146,12 +168,12 @@ function matchTrace(options, network, segments, tree, trace) {
 
   var ruler = cheapRuler(coords[0][1], 'kilometers');
 
-  for (var i = 0; i < coords.length - 1; i++) {
-    lastbearing = ruler.bearing(coords[i], coords[i + 1]);
+  for (var i = 0; i < coords.length; i++) {
+    if (i < coords.length - 1) lastbearing = ruler.bearing(coords[i], coords[i + 1]);
+
     results.push(match(options, network, segments, tree, coords[i], lastbearing, ruler));
   }
-  // handle last point
-  if (coords.length > 0) results.push(match(options, network, segments, tree, coords[coords.length - 1], lastbearing, ruler));
+
   return results;
 }
 
