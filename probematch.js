@@ -24,35 +24,80 @@ module.exports = function (roadNetwork, opts) {
   var tree = rbush(options.rbushMaxEntries);
   var network = normalize(flatten(roadNetwork));
 
-  prepSegments(segments, load, network.features, options);
+  prepSegments(options, segments, load, network.features);
   tree.load(load);
 
   var matcher = function (probe, bearing) {
-    return match(probe, bearing, options, network, segments, tree);
+    return match(options, network, segments, tree, probe, bearing);
   };
   matcher.matchTrace = function (trace) {
-    return matchTrace(trace, options, network, segments, tree);
+    return matchTrace(options, network, segments, tree, trace);
   };
   return matcher;
 };
 
-function match(probe, bearing, options, network, segments, tree, ruler) {
+/**
+ * Iterates over each road network feature, explodes it into it's segments
+ * and loads them into index arrays (`segments` && `load`)
+ *
+ * @param      {object}  options          probematch configuration object
+ * @param      {array}   segments         Array that will hold segment linestrings
+ * @param      {array}   load             Array that will hold bboxes to index in rbush
+ * @param      {array}   networkFeatures  Array of the road network's linestring features
+ */
+function prepSegments(options, segments, load, networkFeatures) {
+  for (var i = 0; i < networkFeatures.length; i++) {
+    var coords = networkFeatures[i].geometry.coordinates;
+    var ruler = cheapRuler(coords[0][1], 'kilometers');
+
+    for (var j = 0; j < coords.length - 1; j++) {
+      prepSegment(options, segments, load, i, j, coords[j], coords[j + 1], ruler, options.maxProbeDistance);
+    }
+  }
+}
+
+/**
+ * Takes the coordinates of a road segment, configuring it for
+ * rbush indexing and lookups.
+ *
+ * @param      {object}  options           probematch configuration object
+ * @param      {array}   segments          Array that will hold segment linestrings
+ * @param      {array}   load              Array that will hold bboxes to index in rbush
+ * @param      {int}     roadId            Numeric index of which road in the network this segment belongs to
+ * @param      {int}     segmentId         Numeric index of which segment in the road `a` and `b` represent
+ * @param      {array}   a                 First coordinate of the current segment
+ * @param      {array}   b                 Second coordinate of the current segment
+ * @param      {object}  ruler             A cheap-ruler instance
+ */
+function prepSegment(options, segments, load, roadId, segmentId, a, b, ruler) {
+  var seg = linestring([a, b], {roadId: roadId, segmentId: segmentId});
+  var ext = ruler.bufferBBox([
+    Math.min(a[0], b[0]),
+    Math.min(a[1], b[1]),
+    Math.max(a[0], b[0]),
+    Math.max(a[1], b[1])
+  ], options.maxProbeDistance);
+
+  seg.properties.bearing = ruler.bearing(a, b);
+  if (seg.properties.bearing < 0) seg.properties.bearing += 360;
+
+  ext.id = segments.length;
+  segments.push(seg);
+  load.push(ext);
+}
+
+function match(options, network, segments, tree, probe, bearing, ruler) {
   var probeCoords = probe.geometry ? probe.geometry.coordinates : probe;
 
   if (!ruler) ruler = cheapRuler(probeCoords[1], 'kilometers');
+  if (options.compareBearing &&
+    (bearing === null || typeof bearing === 'undefined')) return [];
+  if (bearing && bearing < 0) bearing = bearing + 360;
 
   var ext = [probeCoords[0], probeCoords[1], probeCoords[0], probeCoords[1]];
   var hits = tree.search(ext);
-  var matches = [];
 
-  if (options.compareBearing &&
-    (bearing === null || typeof bearing === 'undefined')) return [];
-
-  if (bearing && bearing < 0) bearing = bearing + 360;
-
-  for (var i = 0; i < hits.length; i++) {
-    filterMatchHits(hits[i], matches, probeCoords, bearing, segments, network.features, options, ruler);
-  }
+  var matches = filterMatchHits(options, network.features, segments, hits, probeCoords, bearing, ruler);
 
   matches.sort(function (a, b) {
     return a.distance - b.distance;
@@ -60,26 +105,41 @@ function match(probe, bearing, options, network, segments, tree, ruler) {
   return matches;
 }
 
-function filterMatchHits(hit, matches, probeCoords, bearing, segments, networkFeatures, options, ruler) {
-  var segment = segments[hit.id];
-  var parent = networkFeatures[segment.properties.roadId];
+/**
+ * Filter down matches by checking real distance and bearing - initial matches are found just
+ * by checking bbox hits against the road network
+ *
+ * @param      {object}  options          probematch configuration object
+ * @param      {array}   networkFeatures  Array of the road network's linestring features
+ * @param      {array}   segments         Array holding linestrings of each segment in the road network
+ * @param      {array}   hits             Array of possible matches from `tree.search`
+ * @param      {array}   probeCoords      Probe's [x, y] coordinates
+ * @param      {number}  bearing          Probe's bearing
+ * @param      {object}  ruler            A cheap-ruler instance
+ */
+function filterMatchHits(options, networkFeatures, segments, hits, probeCoords, bearing, ruler) {
+  var matches = [];
+  for (var i = 0; i < hits.length; i++) {
+    var hit = hits[i];
+    var segment = segments[hit.id];
+    var parent = networkFeatures[segment.properties.roadId];
 
-  if (options.compareBearing && !compareBearing(
-    segment.properties.bearing,
-    bearing,
-    options.maxBearingRange,
-    options.bidirectionalBearing
-  )) return;
+    if (options.compareBearing && !compareBearing(
+      segment.properties.bearing,
+      bearing,
+      options.maxBearingRange,
+      options.bidirectionalBearing
+    )) continue;
 
-  var p = ruler.pointOnLine(segment.geometry.coordinates, probeCoords);
-  var dist = ruler.distance(probeCoords, p);
+    var p = ruler.pointOnLine(segment.geometry.coordinates, probeCoords);
+    var dist = ruler.distance(probeCoords, p);
 
-  if (dist <= options.maxProbeDistance) {
-    matches.push({segment: segment, road: parent, distance: dist});
+    if (dist <= options.maxProbeDistance) matches.push({segment: segment, road: parent, distance: dist});
   }
+  return matches;
 }
 
-function matchTrace(trace, options, network, segments, tree) {
+function matchTrace(options, network, segments, tree, trace) {
   var coords = trace.coordinates || trace.geometry.coordinates;
   var lastbearing;
   var results = [];
@@ -88,39 +148,11 @@ function matchTrace(trace, options, network, segments, tree) {
 
   for (var i = 0; i < coords.length - 1; i++) {
     lastbearing = ruler.bearing(coords[i], coords[i + 1]);
-    results.push(match(coords[i], lastbearing, options, network, segments, tree, ruler));
+    results.push(match(options, network, segments, tree, coords[i], lastbearing, ruler));
   }
   // handle last point
-  if (coords.length > 0) results.push(match(coords[coords.length - 1], lastbearing, options, network, segments, tree, ruler));
+  if (coords.length > 0) results.push(match(options, network, segments, tree, coords[coords.length - 1], lastbearing, ruler));
   return results;
-}
-
-function prepSegments(segments, load, networkFeatures, options) {
-  for (var i = 0; i < networkFeatures.length; i++) {
-    var coords = networkFeatures[i].geometry.coordinates;
-    var ruler = cheapRuler(coords[0][1], 'kilometers');
-
-    for (var j = 0; j < coords.length - 1; j++) {
-      prepLine(load, segments, i, j, coords[j], coords[j + 1], ruler, options.maxProbeDistance);
-    }
-  }
-}
-
-function prepLine(load, segments, i, j, a, b, ruler, maxProbeDistance) {
-  var seg = linestring([a, b], {roadId: i, segmentId: j});
-  var ext = ruler.bufferBBox([
-    Math.min(a[0], b[0]),
-    Math.min(a[1], b[1]),
-    Math.max(a[0], b[0]),
-    Math.max(a[1], b[1])
-  ], maxProbeDistance);
-
-  seg.properties.bearing = ruler.bearing(a, b);
-  if (seg.properties.bearing < 0) seg.properties.bearing += 360;
-
-  ext.id = segments.length;
-  segments.push(seg);
-  load.push(ext);
 }
 
 /**
