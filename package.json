@@ -10,7 +10,7 @@
   ],
   "main": "probematch.js",
   "scripts": {
-    "lint": "eslint *.js test/*.js",
+    "lint": "eslint probematch.js test/*.js",
     "pretest": "npm run lint",
     "test": "tap -Rspec test/test.js"
   },
