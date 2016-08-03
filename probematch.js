@@ -1,15 +1,16 @@
 var rbush = require('rbush');
-var extent = require('turf-extent');
 var xtend = require('xtend');
 var flatten = require('geojson-flatten');
 var normalize = require('geojson-normalize');
-var point = require('turf-point');
 var linestring = require('turf-linestring');
-var destination = require('turf-destination');
-var pointOnLine = require('turf-point-on-line');
-var distance = require('turf-distance');
-var bearing = require('turf-bearing');
+var cheapRuler = require('cheap-ruler');
 
+/**
+ * Index `roadNetwork` and return the matcher function
+ *
+ * @param      {FeatureCollection}    roadNetwork  FeatureCollection of linestrings representing roads
+ * @param      {object}               options      probematch configuration object
+ */
 module.exports = function (roadNetwork, opts) {
   var options = xtend({
     maxProbeDistance: 0.01, // max kilometers away a probe can be to be considered a match
@@ -19,100 +20,185 @@ module.exports = function (roadNetwork, opts) {
     bidirectionalBearing: false
   }, opts);
 
+  var segments = [], load = [];
   var tree = rbush(options.rbushMaxEntries);
-  var network = normalize(flatten(roadNetwork));
-  var load = [];
-  var segments = [];
+  var network = normalize(flatten(roadNetwork)).features;
 
-  for (var i = 0; i < network.features.length; i++) {
-    var coords = network.features[i].geometry.coordinates;
-    for (var j = 0; j < coords.length - 1; j++) {
-      var seg = linestring([coords[j], coords[j + 1]], {
-        roadId: i,
-        segmentId: j
-      });
-      var ext = padBbox(extent(seg), options.maxProbeDistance);
-      seg.properties.bearing = bearing(point(coords[j]), point(coords[j + 1]));
-      if (seg.properties.bearing < 0) seg.properties.bearing += 360;
-
-      ext.id = segments.length;
-
-      load.push(ext);
-      segments.push(seg);
-    }
-  }
+  prepSegments(options, segments, load, network);
   tree.load(load);
 
-
-
-  var match = function (probe, bearing) {
-    var ext = padBbox(extent(probe), options.maxProbeDistance);
-    var hits = tree.search(ext);
-    var matches = [];
-
-    if (options.compareBearing &&
-      (bearing === null || typeof bearing === 'undefined')) return [];
-
-    if (bearing && bearing < 0) bearing = bearing + 360;
-
-    for (var i = 0; i < hits.length; i++) {
-      var segment = segments[hits[i].id];
-      var parent = network.features[segment.properties.roadId];
-
-      if (options.compareBearing && !compareBearing(
-        segment.properties.bearing,
-        options.maxBearingRange,
-        bearing,
-        options.bidirectionalBearing
-      )) continue;
-
-      var p = pointOnLine(segment, probe);
-      var dist = distance(probe, p, 'kilometers');
-
-      if (dist <= options.maxProbeDistance) {
-        matches.push({segment: segment, road: parent, distance: dist});
-      }
-    }
-
-    matches.sort(function (a, b) {
-      if (a.distance < b.distance) { return -1; }
-      if (a.distance > b.distance) { return 1; }
-      return 0;
-    });
-    return matches;
+  var matcher = function (probe, bearing) {
+    return match(options, network, segments, tree, probe, bearing);
   };
-
-  match.matchTrace = function (trace) {
-    var coords = trace.coordinates || trace.geometry.coordinates;
-
-    var firstpt, lastbearing;
-    var results = [];
-
-    for (var i = 0; i < coords.length - 1; i++) {
-      if (!firstpt) firstpt = point(coords[i]);
-      var nextpt = point(coords[i + 1]);
-      lastbearing = bearing(firstpt, nextpt);
-      results.push(match(firstpt, lastbearing));
-      firstpt = nextpt;
-    }
-    // handle last point
-    if (firstpt) results.push(match(firstpt, lastbearing));
-    return results;
+  matcher.matchTrace = function (trace) {
+    return matchTrace(options, network, segments, tree, trace);
   };
-
-  match.tree = tree;
-  match.options = options;
-
-  return match;
+  return matcher;
 };
 
-function compareBearing(base, range, bearing, bidirectional) {
+/**
+ * Iterates over each road network feature, explodes it into it's segments
+ * and loads them into index arrays (`segments` && `load`)
+ *
+ * @param      {object}  options          probematch configuration object
+ * @param      {array}   segments         Array that will hold segment linestrings
+ * @param      {array}   load             Array that will hold bboxes to index in rbush
+ * @param      {array}   network          Array of the road network's linestring features
+ */
+function prepSegments(options, segments, load, network) {
+  for (var i = 0; i < network.length; i++) {
+    var coords = network[i].geometry.coordinates;
+    var ruler = cheapRuler(coords[0][1], 'kilometers');
+
+    for (var j = 0; j < coords.length - 1; j++) {
+      prepSegment(options, segments, load, i, j, coords[j], coords[j + 1], ruler);
+    }
+  }
+}
+
+/**
+ * Takes the coordinates of a road segment, configuring it for
+ * rbush indexing and lookups.
+ *
+ * @param      {object}  options           probematch configuration object
+ * @param      {array}   segments          Array that will hold segment linestrings
+ * @param      {array}   load              Array that will hold bboxes to index in rbush
+ * @param      {int}     roadId            Numeric index of which road in the network this segment belongs to
+ * @param      {int}     segmentId         Numeric index of which segment in the road `a` and `b` represent
+ * @param      {array}   a                 First coordinate of the current segment
+ * @param      {array}   b                 Second coordinate of the current segment
+ * @param      {object}  ruler             A cheap-ruler instance
+ */
+function prepSegment(options, segments, load, roadId, segmentId, a, b, ruler) {
+  var seg = linestring([a, b], {roadId: roadId, segmentId: segmentId});
+  var ext = ruler.bufferBBox([
+    Math.min(a[0], b[0]),
+    Math.min(a[1], b[1]),
+    Math.max(a[0], b[0]),
+    Math.max(a[1], b[1])
+  ], options.maxProbeDistance);
+
+  seg.properties.bearing = ruler.bearing(a, b);
+  if (seg.properties.bearing < 0) seg.properties.bearing += 360;
+
+  ext.id = segments.length;
+  segments.push(seg);
+  load.push(ext);
+}
+
+/**
+ * Match a probe to the road network
+ *
+ * @param  {object}                     options   probematch configuration object
+ * @param  {array}                      network   Array of the road network's linestring features
+ * @param  {array}                      segments  Array holding linestrings of each segment in the road network
+ * @param  {object}                     tree      Rbush tree of segment bounding boxes
+ * @param  {Point|Feature<Point>|array} probe     Probe to match to the road network
+ * @param  {number}                     bearing   Bearing of the probe
+ * @param  {object}                     ruler     A cheap ruler instance
+ * @return {array}  matches for the probe
+ */
+function match(options, network, segments, tree, probe, bearing, ruler) {
+  var probeCoords = probe.geometry ? probe.geometry.coordinates : probe;
+
+  if (!ruler) ruler = cheapRuler(probeCoords[1], 'kilometers');
+  if (options.compareBearing &&
+    (bearing === null || typeof bearing === 'undefined')) return [];
+  if (bearing && bearing < 0) bearing = bearing + 360;
+
+  var ext = [probeCoords[0], probeCoords[1], probeCoords[0], probeCoords[1]];
+  var hits = tree.search(ext);
+
+  var matches = filterMatchHits(options, network, segments, hits, probeCoords, bearing, ruler);
+
+  matches.sort(function (a, b) {
+    return a.distance - b.distance;
+  });
+  return matches;
+}
+
+/**
+ * Filter down matches by checking real distance and bearing - initial matches are found just
+ * by checking bbox hits against the road network
+ *
+ * @param      {object}  options          probematch configuration object
+ * @param      {array}   network          Array of the road network's linestring features
+ * @param      {array}   segments         Array holding linestrings of each segment in the road network
+ * @param      {array}   hits             Array of possible matches from `tree.search`
+ * @param      {array}   probeCoords      Probe's [x, y] coordinates
+ * @param      {number}  bearing          Probe's bearing
+ * @param      {object}  ruler            A cheap-ruler instance
+ */
+function filterMatchHits(options, network, segments, hits, probeCoords, bearing, ruler) {
+  var matches = [];
+  for (var i = 0; i < hits.length; i++) {
+    var hit = hits[i];
+    var segment = segments[hit.id];
+    var parent = network[segment.properties.roadId];
+
+    if (options.compareBearing && !compareBearing(
+      segment.properties.bearing,
+      bearing,
+      options.maxBearingRange,
+      options.bidirectionalBearing
+    )) continue;
+
+    var p = ruler.pointOnLine(segment.geometry.coordinates, probeCoords);
+    var dist = ruler.distance(probeCoords, p.point);
+
+    if (dist <= options.maxProbeDistance) matches.push({segment: segment, road: parent, distance: dist});
+  }
+  return matches;
+}
+
+/**
+ * Match a trace to the road network
+ *
+ * @param      {object}                         options   probematch configuration object
+ * @param      {array}                          network   Array of the road network's linestring features
+ * @param      {array}                          segments  Array holding linestrings of each segment in the road network
+ * @param      {object}                         tree      Rbush tree of segment bounding boxes
+ * @param      {LineString|Feature<LineString>} trace     Trace to match to the network
+ * @return     {array}   matches for each point of `trace`
+ */
+function matchTrace(options, network, segments, tree, trace) {
+  var coords = trace.coordinates || trace.geometry.coordinates;
+  var lastbearing;
+  var results = [];
+
+  var ruler = cheapRuler(coords[0][1], 'kilometers');
+
+  for (var i = 0; i < coords.length; i++) {
+    if (i < coords.length - 1) lastbearing = ruler.bearing(coords[i], coords[i + 1]);
+
+    results.push(match(options, network, segments, tree, coords[i], lastbearing, ruler));
+  }
+
+  return results;
+}
+
+/**
+ * Compare bearing `base` to `bearing`, to determine if they are
+ * close enough to eachother to be considered matching. `range` is
+ * number of degrees difference that is allowed between the bearings.
+ * `allowReverse` allows bearings that are 180 degrees +/- `range` to be
+ * considered matching.
+ *
+ * TODO: proper bearing wrapping (deal with negative bearings)
+ *
+ * @param      {number}   base           Base bearing
+ * @param      {number}   range          The range
+ * @param      {number}   bearing        Bearing to compare to base
+ * @param      {boolean}  allowReverse   Should opposite bearings be allowed to match?
+ * @return     {boolean}  Whether or not base and bearing match
+ */
+function compareBearing(base, bearing, range, allowReverse) {
   var min = base - range,
     max = base + range;
 
   if (bearing > min && bearing < max) return true;
 
-  if (bidirectional) {
+  if (allowReverse) {
     min = min - 180;
     max = max - 180;
 
@@ -123,18 +209,4 @@ function compareBearing(base, range, bearing, bidirectional) {
   }
 
   return false;
-}
-
-function padBbox(bbox, tolerance) {
-  var sw = point([bbox[0], bbox[1]]);
-  var ne = point([bbox[2], bbox[3]]);
-  var newSw = destination(sw, tolerance, -135, 'kilometers');
-  var newNe = destination(ne, tolerance, 45, 'kilometers');
-
-  return [
-    newSw.geometry.coordinates[0],
-    newSw.geometry.coordinates[1],
-    newNe.geometry.coordinates[0],
-    newNe.geometry.coordinates[1]
-  ];
 }
