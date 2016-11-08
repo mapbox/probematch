@@ -190,26 +190,27 @@ function matchTrace(options, network, segments, tree, trace) {
  * @param      {boolean}  allowReverse   Should opposite bearings be allowed to match?
  * @return     {boolean}  Whether or not base and bearing match
  */
-module.exports.compareBearing = function(base, bearing, range, allowReverse) {
+module.exports.compareBearing = function (base, bearing, range, allowReverse) {
 
   // map base and bearing into positive modulo 360 space
-  var base = normalizeAngle(base);
-  var bearing = normalizeAngle(bearing);
+  var normalizedBase = normalizeAngle(base);
+  var normalizedBearing = normalizeAngle(bearing);
 
-  var min = base - range;
-  var max = base + range;
+  var min = normalizedBase - range;
+  var max = normalizedBase + range;
 
-  if (min <= bearing && bearing <= max) return true;
+  if (min <= normalizedBearing && normalizedBearing <= max) return true;
 
   if (min < 0) {
-    var negativeBearing = bearing - 360;
+    var negativeBearing = normalizedBearing - 360;
     if (min <= negativeBearing) return true;
   }
 
 
-  if (allowReverse) return module.exports.compareBearing(base + 180, bearing, range);
+  if (allowReverse)
+    return module.exports.compareBearing(normalizedBase + 180, bearing, range);
   return false;
-}
+};
 
 /**
  * Map angle to positive modulo 360 space.

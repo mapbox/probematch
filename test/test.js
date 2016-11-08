@@ -21,7 +21,7 @@ function reducePrecision(matches) {
   return matches;
 }
 
-/*
+
 test('probematch -- returns scored roads', function (t) {
   var match = probematch(load(), {compareBearing: false});
   var probe = point([-77.03038215637207, 38.909639917926036]);
@@ -93,9 +93,9 @@ test('probematch -- can match a trace to roads', function (t) {
   t.deepEqual(bestMatches, require('./fixtures/out/trace.json'), 'all points in trace matched expected segments');
   t.end();
 });
-*/
 
-test('compareBearing', function(t) {
+
+test('compareBearing', function (t) {
 
   t.equal(true, probematch.compareBearing(45, 45, 10));
   t.equal(true, probematch.compareBearing(45, 35, 10));
