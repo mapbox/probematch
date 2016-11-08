@@ -136,7 +136,7 @@ function filterMatchHits(options, network, segments, hits, probeCoords, bearing,
     var segment = segments[hit.id];
     var parent = network[segment.properties.roadId];
 
-    if (options.compareBearing && !compareBearing(
+    if (options.compareBearing && !module.exports.compareBearing(
       segment.properties.bearing,
       bearing,
       options.maxBearingRange,
@@ -179,12 +179,10 @@ function matchTrace(options, network, segments, tree, trace) {
 
 /**
  * Compare bearing `base` to `bearing`, to determine if they are
- * close enough to eachother to be considered matching. `range` is
+ * close enough to each other to be considered matching. `range` is
  * number of degrees difference that is allowed between the bearings.
  * `allowReverse` allows bearings that are 180 degrees +/- `range` to be
  * considered matching.
- *
- * TODO: proper bearing wrapping (deal with negative bearings)
  *
  * @param      {number}   base           Base bearing
  * @param      {number}   range          The range
@@ -192,21 +190,33 @@ function matchTrace(options, network, segments, tree, trace) {
  * @param      {boolean}  allowReverse   Should opposite bearings be allowed to match?
  * @return     {boolean}  Whether or not base and bearing match
  */
-function compareBearing(base, bearing, range, allowReverse) {
-  var min = base - range,
-    max = base + range;
+module.exports.compareBearing = function (base, bearing, range, allowReverse) {
 
-  if (bearing > min && bearing < max) return true;
+  // map base and bearing into positive modulo 360 space
+  var normalizedBase = normalizeAngle(base);
+  var normalizedBearing = normalizeAngle(bearing);
 
-  if (allowReverse) {
-    min = min - 180;
-    max = max - 180;
+  var min = normalizedBase - range;
+  var max = normalizedBase + range;
 
-    if (min < 0) min = min + 360;
-    if (max < 0) max = max + 360;
+  if (min <= normalizedBearing && normalizedBearing <= max) return true;
 
-    if (bearing > min && bearing < max) return true;
+  if (min < 0) {
+    var negativeBearing = normalizedBearing - 360;
+    if (min <= negativeBearing) return true;
   }
 
+
+  if (allowReverse)
+    return module.exports.compareBearing(normalizedBase + 180, bearing, range);
   return false;
+};
+
+/**
+ * Map angle to positive modulo 360 space.
+ * @param  {[type]} angle an angle in degrees
+ * @return {[type]}       equivalent angle in [0-360] space.
+ */
+function normalizeAngle(angle) {
+  return (angle < 0) ? (angle % 360) + 360 : (angle % 360);
 }
