@@ -21,7 +21,7 @@ function reducePrecision(matches) {
   return matches;
 }
 
-
+/*
 test('probematch -- returns scored roads', function (t) {
   var match = probematch(load(), {compareBearing: false});
   var probe = point([-77.03038215637207, 38.909639917926036]);
@@ -91,5 +91,59 @@ test('probematch -- can match a trace to roads', function (t) {
   });
 
   t.deepEqual(bestMatches, require('./fixtures/out/trace.json'), 'all points in trace matched expected segments');
+  t.end();
+});
+*/
+
+test('compareBearing', function(t) {
+
+  t.equal(true, probematch.compareBearing(45, 45, 10));
+  t.equal(true, probematch.compareBearing(45, 35, 10));
+  t.equal(true, probematch.compareBearing(45, 55, 10));
+  t.equal(false, probematch.compareBearing(45, 34.9, 10));
+  t.equal(false, probematch.compareBearing(45, 55.1, 10));
+
+  // When angle+limit goes > 360
+  t.equal(true, probematch.compareBearing(355, 359, 10));
+
+  // When angle-limit goes < 0
+  t.equal(true, probematch.compareBearing(5, 359, 10));
+  t.equal(false, probematch.compareBearing(5, 354, 10));
+  t.equal(false, probematch.compareBearing(5, 16, 10));
+
+  // Checking other cases of wraparound
+  t.equal(true, probematch.compareBearing(-5, 359, 10));
+  t.equal(false, probematch.compareBearing(-5, 344, 10));
+  t.equal(false, probematch.compareBearing(-5, 6, 10));
+
+  t.equal(true, probematch.compareBearing(5, -1, 10));
+  t.equal(false, probematch.compareBearing(5, -6, 10));
+
+  t.equal(true, probematch.compareBearing(5, -721, 10));
+  t.equal(true, probematch.compareBearing(5, 719, 10));
+
+  t.equal(false, probematch.compareBearing(1, 1, -1));
+  t.equal(true, probematch.compareBearing(1, 1, 0));
+
+  t.equal(true, probematch.compareBearing(3, 11, 8)); // base, bearing, range
+  t.equal(true, probematch.compareBearing(3, -5, 8));
+  t.equal(true, probematch.compareBearing(3, 355, 8));
+  t.equal(true, probematch.compareBearing(3, 0, 8));
+  t.equal(false, probematch.compareBearing(3, 12, 8));
+  t.equal(false, probematch.compareBearing(3, -6, 8));
+
+  t.equal(true, probematch.compareBearing(3, 175, 8, true)); // base, bearing, range
+  t.equal(true, probematch.compareBearing(3, 191, 8, true));
+  t.equal(false, probematch.compareBearing(3, 174, 8, true));
+  t.equal(false, probematch.compareBearing(3, 192, 8, true));
+  t.equal(true, probematch.compareBearing(3, 185, 8, true));
+
+  t.equal(true, probematch.compareBearing(183, 11, 8, true)); // base, bearing, range
+  t.equal(true, probematch.compareBearing(183, -5, 8, true));
+  t.equal(true, probematch.compareBearing(183, 355, 8, true));
+  t.equal(true, probematch.compareBearing(183, 0, 8, true));
+  t.equal(false, probematch.compareBearing(183, 12, 8, true));
+  t.equal(false, probematch.compareBearing(183, -6, 8, true));
+
   t.end();
 });
