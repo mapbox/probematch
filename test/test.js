@@ -28,6 +28,7 @@ test('probematch -- returns scored roads', function (t) {
 
   var matched = match(probe);
 
+  t.equal(matched.length, 3);
   t.deepEqual(reducePrecision(matched), require(path.join(__dirname, 'fixtures/out/scored.json')), 'matches expected output');
   t.ok(matched[0].distance < matched[1].distance, 'is sorted by distance');
   t.end();
