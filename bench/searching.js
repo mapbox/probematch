@@ -3,7 +3,7 @@ var probematch = require('../probematch.js');
 var ways = require('./roads.json');
 
 var points = 1000000;
-var loops = process.argv[2] || 100;
+var loops = process.argv[2] || 10;
 
 console.time('matcher');
 var matcher = probematch(ways, {

@@ -12,7 +12,8 @@
   "scripts": {
     "lint": "eslint probematch.js test/*.js",
     "pretest": "npm run lint",
-    "test": "tap -Rspec test/test.js"
+    "test": "tap -Rspec test/test.js",
+    "bench": "node bench/searching.js 10"
   },
   "eslintConfig": {
     "extends": "mourner",
