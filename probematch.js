@@ -81,9 +81,16 @@ function prepSegment(options, segments, load, roadId, segmentId, a, b, ruler) {
   seg.properties.bearing = ruler.bearing(a, b);
   if (seg.properties.bearing < 0) seg.properties.bearing += 360;
 
-  ext.id = segments.length;
+  var id = segments.length;
   segments.push(seg);
-  load.push(ext);
+
+  load.push({
+    minX: ext[0],
+    minY: ext[1],
+    maxX: ext[2],
+    maxY: ext[3],
+    id: id
+  });
 }
 
 /**
@@ -106,8 +113,12 @@ function match(options, network, segments, tree, probe, bearing, ruler) {
     (bearing === null || typeof bearing === 'undefined')) return [];
   if (bearing && bearing < 0) bearing = bearing + 360;
 
-  var ext = [probeCoords[0], probeCoords[1], probeCoords[0], probeCoords[1]];
-  var hits = tree.search(ext);
+  var hits = tree.search({
+    minX: probeCoords[0],
+    minY: probeCoords[1],
+    maxX: probeCoords[0],
+    maxY: probeCoords[1]
+  });
 
   var matches = filterMatchHits(options, network, segments, hits, probeCoords, bearing, ruler);
 

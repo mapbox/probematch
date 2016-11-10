@@ -12,7 +12,8 @@
   "scripts": {
     "lint": "eslint probematch.js test/*.js",
     "pretest": "npm run lint",
-    "test": "tap -Rspec test/test.js"
+    "test": "tap -Rspec test/test.js",
+    "bench": "node bench/searching.js 10"
   },
   "eslintConfig": {
     "extends": "mourner",
@@ -38,7 +39,7 @@
     "cheap-ruler": "^2.4.0",
     "geojson-flatten": "^0.2.0",
     "geojson-normalize": "0.0.1",
-    "rbush": "^1.4.3",
+    "rbush": "^2.0.1",
     "turf-linestring": "^1.0.0",
     "xtend": "^4.0.0"
   },
