@@ -217,6 +217,11 @@ module.exports.compareBearing = function (base, bearing, range, allowReverse) {
     if (min <= negativeBearing) return true;
   }
 
+  if (max > 360) {
+    max -= 360;
+    if (normalizedBearing <= max) return true;
+  }
+
 
   if (allowReverse)
     return module.exports.compareBearing(normalizedBase + 180, bearing, range);
