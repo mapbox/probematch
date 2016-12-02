@@ -207,19 +207,16 @@ module.exports.compareBearing = function (base, bearing, range, allowReverse) {
   var normalizedBase = normalizeAngle(base);
   var normalizedBearing = normalizeAngle(bearing);
 
-  var min = normalizedBase - range;
-  var max = normalizedBase + range;
+  var min = normalizeAngle(normalizedBase - range);
+  var max = normalizeAngle(normalizedBase + range);
 
-  if (min <= normalizedBearing && normalizedBearing <= max) return true;
-
-  if (min < 0) {
-    var negativeBearing = normalizedBearing - 360;
-    if (min <= negativeBearing) return true;
-  }
-
+  if (min < max) {
+    if (min <= normalizedBearing && normalizedBearing <= max) return true;
+  } else if (min <= normalizedBearing || normalizedBearing <= max) return true;
 
   if (allowReverse)
     return module.exports.compareBearing(normalizedBase + 180, bearing, range);
+
   return false;
 };
 

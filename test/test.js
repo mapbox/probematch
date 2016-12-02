@@ -106,11 +106,15 @@ test('compareBearing', function (t) {
 
   // When angle+limit goes > 360
   t.equal(true, probematch.compareBearing(355, 359, 10));
+  t.equal(true, probematch.compareBearing(351.2, 59.6, 89));
+  t.equal(false, probematch.compareBearing(351.2, 181, 89));
+  t.equal(true, probematch.compareBearing(350.6, 23.4, 89));
 
   // When angle-limit goes < 0
   t.equal(true, probematch.compareBearing(5, 359, 10));
   t.equal(false, probematch.compareBearing(5, 354, 10));
   t.equal(false, probematch.compareBearing(5, 16, 10));
+  t.equal(true, probematch.compareBearing(59.6, 351.2, 89));
 
   // Checking other cases of wraparound
   t.equal(true, probematch.compareBearing(-5, 359, 10));
@@ -145,6 +149,8 @@ test('compareBearing', function (t) {
   t.equal(true, probematch.compareBearing(183, 0, 8, true));
   t.equal(false, probematch.compareBearing(183, 12, 8, true));
   t.equal(false, probematch.compareBearing(183, -6, 8, true));
+
+
 
   t.end();
 });
