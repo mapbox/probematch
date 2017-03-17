@@ -22,7 +22,7 @@ Match a single GPS measurements (probe) or line of sequential GPS measurements (
 var probematch = require('probematch');
 
 var roads = {
-  'type': 'FeatureCollection'
+  'type': 'FeatureCollection',
   'features': [
     // Linestring features representing the road network
   ]
