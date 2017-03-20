@@ -37,8 +37,6 @@
   "license": "ISC",
   "dependencies": {
     "cheap-ruler": "^2.4.0",
-    "geojson-flatten": "^0.2.0",
-    "geojson-normalize": "0.0.1",
     "rbush": "^2.0.1",
     "turf-linestring": "^1.0.0",
     "xtend": "^4.0.0"
