@@ -1,7 +1,5 @@
 var rbush = require('rbush');
 var xtend = require('xtend');
-var flatten = require('geojson-flatten');
-var normalize = require('geojson-normalize');
 var linestring = require('turf-linestring');
 var cheapRuler = require('cheap-ruler');
 
@@ -22,7 +20,7 @@ module.exports = function (roadNetwork, opts) {
 
   var segments = [], load = [];
   var tree = rbush(options.rbushMaxEntries);
-  var network = normalize(flatten(roadNetwork)).features;
+  var network = roadNetwork.features;
 
   prepSegments(options, segments, load, network);
   tree.load(load);
