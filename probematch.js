@@ -116,16 +116,10 @@ function match(options, network, index, probe, bearing, ruler) {
     (bearing === null || typeof bearing === 'undefined')) return [];
   if (bearing && bearing < 0) bearing = bearing + 360;
 
-  var hits = [];
-  index.bush.search(probeCoords[0], probeCoords[1], probeCoords[0], probeCoords[1], function (i) {
-    hits.push(i);
-  });
-
+  var hits = index.bush.search(probeCoords[0], probeCoords[1], probeCoords[0], probeCoords[1]);
   var matches = filterMatchHits(options, network, index.segments, hits, probeCoords, bearing, ruler);
 
-  matches.sort(function (a, b) {
-    return a.distance - b.distance;
-  });
+  matches.sort(sortByDistance);
   return matches;
 }
 
@@ -228,4 +222,8 @@ module.exports.compareBearing = function (base, bearing, range, allowReverse) {
  */
 function normalizeAngle(angle) {
   return (angle < 0) ? (angle % 360) + 360 : (angle % 360);
+}
+
+function sortByDistance(a, b) {
+  return a.distance - b.distance;
 }
