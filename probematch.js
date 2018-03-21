@@ -43,6 +43,9 @@ function indexNetwork(options, network) {
   var segments = [];
   var load = [];
 
+  // flatbush will throw an error for an empty index.
+  if (network.length === 0) return {segments: [], bush: null};
+
   for (var i = 0; i < network.length; i++) {
     var coords = network[i].geometry.coordinates;
     var ruler = cheapRuler(coords[0][1], 'kilometers');
@@ -116,7 +119,12 @@ function match(options, network, index, probe, bearing, ruler) {
     (bearing === null || typeof bearing === 'undefined')) return [];
   if (bearing && bearing < 0) bearing = bearing + 360;
 
-  var hits = index.bush.search(probeCoords[0], probeCoords[1], probeCoords[0], probeCoords[1]);
+  var hits;
+  if (!index.bush) {
+    hits = [];
+  } else {
+    hits = index.bush.search(probeCoords[0], probeCoords[1], probeCoords[0], probeCoords[1]);
+  }
   var matches = filterMatchHits(options, network, index.segments, hits, probeCoords, bearing, ruler);
 
   matches.sort(sortByDistance);

@@ -34,6 +34,16 @@ test('probematch -- returns scored roads', function (t) {
   t.end();
 });
 
+test('probematch -- empty roads', function (t) {
+  var match = probematch({type: 'FeatureCollection', features: []}, {compareBearing: false});
+  var probe = point([-77.03038215637207, 38.909639917926036]);
+
+  var matched = match(probe);
+
+  t.equal(matched.length, 0);
+  t.end();
+});
+
 test('probematch -- including bearing limits matches', function (t) {
   var match = probematch(load());
   var probe = point([-77.03038215637207, 38.909639917926036]);
