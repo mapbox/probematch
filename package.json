@@ -1,5 +1,5 @@
 {
-  "name": "probematch",
+  "name": "@mapbox/probematch",
   "version": "2.4.1",
   "description": "A small module for matching probes to road networks",
   "keywords": [

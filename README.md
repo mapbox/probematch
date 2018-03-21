@@ -1,4 +1,4 @@
-# probematch
+# @mapbox/probematch
 
 Match a single GPS measurements (probe) or line of sequential GPS measurements (trace) to a road network.
 
@@ -14,12 +14,12 @@ Match a single GPS measurements (probe) or line of sequential GPS measurements (
 
 # install
 
-`npm install probematch`
+`npm install @mapbox/probematch`
 
 # configuration
 
 ```js
-var probematch = require('probematch');
+var probematch = require('@mapbox/probematch');
 
 var roads = {
   'type': 'FeatureCollection',
@@ -50,7 +50,7 @@ maxProbeDistance | number | 0.01 | Maximum distance in kilometers that a probe m
 ## match
 
 ```js
-var probematch = require('probematch');
+var probematch = require('@mapbox/probematch');
 
 var roads = /* FeatureCollection of road geometries */;
 var matcher = probematch(roads, {/* configuration */});
@@ -103,7 +103,7 @@ key | type | description
 
 
 ```js
-var probematch = require('probematch');
+var probematch = require('@mapbox/probematch');
 
 var roads = /* FeatureCollection of road geometries */;
 var matcher = probematch(roads, {/* configuration */});
