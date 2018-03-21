@@ -23,10 +23,10 @@ for (var i = 0; i < loops; i++) {
   var matches = 0;
 
   var start = +new Date();
-  random.features.forEach(function (point) {
-    var results = matcher(point);
+  for (var j = 0; j < random.features.length; j++) {
+    var results = matcher(random.features[j]);
     if (results.length) matches++;
-  });
+  }
   var end = +new Date();
   var diff = end - start;
   overall += diff;

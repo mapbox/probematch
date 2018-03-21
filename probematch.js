@@ -1,4 +1,4 @@
-var flatbush = require('flatbush');
+var Flatbush = require('flatbush');
 var xtend = require('xtend');
 var linestring = require('turf-linestring');
 var cheapRuler = require('cheap-ruler');
@@ -52,7 +52,7 @@ function indexNetwork(options, network) {
     }
   }
 
-  var bush = flatbush(load.length);
+  var bush = new Flatbush(load.length);
   for (var k = 0; k < load.length; k++) {
     bush.add(load[k].minX, load[k].minY, load[k].maxX, load[k].maxY);
   }
