@@ -2,7 +2,7 @@
 
 Match a single GPS measurements (probe) or line of sequential GPS measurements (trace) to a road network.
 
-*probematch* creates an [rbush index](https://github.com/mourner/rbush) of a road network to allow you to quickly match probes or traces to the roads using configurable distance and bearing filters.
+*probematch* creates an [flatbush index](https://github.com/mourner/flatbush) of a road network to allow you to quickly match probes or traces to the roads using configurable distance and bearing filters.
 
 ### terms
 
