@@ -66,11 +66,11 @@ function indexNetwork(options, network) {
 
 /**
  * Takes the coordinates of a road segment, configuring it for
- * rbush indexing and lookups.
+ * flatbush indexing and lookups.
  *
  * @param      {object}  options           probematch configuration object
  * @param      {array}   segments          Array that will hold segment linestrings
- * @param      {array}   load              Array that will hold bboxes to index in rbush
+ * @param      {array}   load              Array that will hold bboxes to index in flatbush
  * @param      {int}     roadId            Numeric index of which road in the network this segment belongs to
  * @param      {int}     segmentId         Numeric index of which segment in the road `a` and `b` represent
  * @param      {array}   a                 First coordinate of the current segment
@@ -105,7 +105,7 @@ function prepSegment(options, segments, load, roadId, segmentId, a, b, ruler) {
  * @param  {object}                     options   probematch configuration object
  * @param  {array}                      network   Array of the road network's linestring features
  * @param  {array}                      segments  Array holding linestrings of each segment in the road network
- * @param  {object}                     tree      Rbush tree of segment bounding boxes
+ * @param  {object}                     tree      flatbush tree of segment bounding boxes
  * @param  {Point|Feature<Point>|array} probe     Probe to match to the road network
  * @param  {number}                     bearing   Bearing of the probe
  * @param  {object}                     ruler     A cheap ruler instance
@@ -171,7 +171,7 @@ function filterMatchHits(options, network, segments, hits, probeCoords, bearing,
  * @param      {object}                         options   probematch configuration object
  * @param      {array}                          network   Array of the road network's linestring features
  * @param      {array}                          segments  Array holding linestrings of each segment in the road network
- * @param      {object}                         tree      Rbush tree of segment bounding boxes
+ * @param      {object}                         tree      flatbush tree of segment bounding boxes
  * @param      {LineString|Feature<LineString>} trace     Trace to match to the network
  * @return     {array}   matches for each point of `trace`
  */
