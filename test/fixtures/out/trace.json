@@ -1,70 +1,53 @@
 [
     {
-      "roadId": 0,
-      "segmentId": 0
+      "roadId": 0
     },
     {
-      "roadId": 0,
-      "segmentId": 0
+      "roadId": 0
     },
     {
-      "roadId": 0,
-      "segmentId": 0
+      "roadId": 0
     },
     {
-      "roadId": 0,
-      "segmentId": 0
+      "roadId": 0
     },
     {
-      "roadId": 0,
-      "segmentId": 1
+      "roadId": 0
     },
     {
-      "roadId": 0,
-      "segmentId": 1
+      "roadId": 0
     },
     {
-      "roadId": 0,
-      "segmentId": 1
+      "roadId": 0
     },
     {
-      "roadId": 2,
-      "segmentId": 3
+      "roadId": 2
     },
     {
-      "roadId": 2,
-      "segmentId": 4
+      "roadId": 2
     },
     {
-      "roadId": 1,
-      "segmentId": 0
+      "roadId": 1
     },
     {
-      "roadId": 1,
-      "segmentId": 0
+      "roadId": 1
     },
     {
-      "roadId": 1,
-      "segmentId": 0
+      "roadId": 1
     },
     {
-      "roadId": 1,
-      "segmentId": 1
+      "roadId": 1
     },
     {
-      "roadId": 1,
-      "segmentId": 1
+      "roadId": 1
     },
     {
-      "roadId": 1,
-      "segmentId": 2
+      "roadId": 1
     },
     {
-      "roadId": 1,
-      "segmentId": 2
+      "roadId": 1
     },
     {
-      "roadId": 1,
-      "segmentId": 2
+      "roadId": 1
     }
 ]

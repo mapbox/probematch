@@ -1,6 +1,6 @@
 {
   "name": "@mapbox/probematch",
-  "version": "2.4.3",
+  "version": "3.0.0",
   "description": "A small module for matching probes to road networks",
   "keywords": [
     "gps",
@@ -36,6 +36,7 @@
   "author": "Tim Channell",
   "license": "ISC",
   "dependencies": {
+    "@turf/bbox": "^6.0.1",
     "cheap-ruler": "^2.4.0",
     "flatbush": "^3.0.0",
     "turf-linestring": "^1.0.0",

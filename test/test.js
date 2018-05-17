@@ -16,7 +16,6 @@ function reducePrecision(matches) {
 
   for (var i = 0; i < matches.length; i++) {
     matches[i].distance = toPrecision(matches[i].distance, 5);
-    matches[i].segment.properties.bearing = toPrecision(matches[i].segment.properties.bearing, 1);
   }
   return matches;
 }
@@ -28,7 +27,7 @@ test('probematch -- returns scored roads', function (t) {
 
   var matched = match(probe);
 
-  t.equal(matched.length, 3);
+  t.equal(matched.length, 2);
   t.deepEqual(reducePrecision(matched), require(path.join(__dirname, 'fixtures/out/scored.json')), 'matches expected output');
   t.ok(matched[0].distance < matched[1].distance, 'is sorted by distance');
   t.end();
@@ -97,7 +96,7 @@ test('probematch -- can match a trace to roads', function (t) {
   var line = require('./fixtures/in/trace.json');
   var matches = match.matchTrace(line);
   var bestMatches = matches.map(function (m) {
-    if (m[0]) return {roadId: m[0].segment.properties.roadId, segmentId: m[0].segment.properties.segmentId};
+    if (m[0]) return {roadId: m[0].road.properties.roadId};
     return null;
   });
 
