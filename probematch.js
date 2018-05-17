@@ -127,6 +127,9 @@ function filterMatchHits(options, network, hits, probeCoords, bearing, ruler) {
 
     var p = ruler.pointOnLine(road.geometry.coordinates, probeCoords);
     var distance = ruler.distance(probeCoords, p.point);
+
+    if (distance > options.maxProbeDistance) continue;
+
     var index = p.index;
     var segmentBearing = ruler.bearing(
       road.geometry.coordinates[index],
@@ -140,9 +143,7 @@ function filterMatchHits(options, network, hits, probeCoords, bearing, ruler) {
       options.bidirectionalBearing
     )) continue;
 
-    if (distance <= options.maxProbeDistance) {
-      matches.push({road: road, distance: distance, index: index});
-    }
+    matches.push({road: road, distance: distance, index: index});
   }
   return matches;
 }
