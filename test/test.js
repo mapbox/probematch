@@ -16,6 +16,7 @@ function reducePrecision(matches) {
 
   for (var i = 0; i < matches.length; i++) {
     matches[i].distance = toPrecision(matches[i].distance, 5);
+    matches[i].bearing = toPrecision(matches[i].bearing, 5);
   }
   return matches;
 }

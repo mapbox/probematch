@@ -144,7 +144,7 @@ function filterMatchHits(options, network, hits, probeCoords, bearing, ruler) {
       options.bidirectionalBearing
     )) continue;
 
-    matches.push({road: road, distance: distance, index: index});
+    matches.push({road: road, distance: distance, index: index, bearing: segmentBearing});
   }
   return matches;
 }

@@ -2,6 +2,7 @@
     {
         "distance": 0.12141,
         "index": 0,
+        "bearing": 90,
         "road": {
             "geometry": {
                 "coordinates": [
