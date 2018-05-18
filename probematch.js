@@ -91,9 +91,10 @@ function match(options, network, index, probe, bearing, ruler) {
   var probeCoords = probe.geometry ? probe.geometry.coordinates : probe;
 
   if (!ruler) ruler = cheapRuler(probeCoords[1], 'kilometers');
-  if (options.compareBearing &&
-    (bearing === null || typeof bearing === 'undefined')) return [];
-  if (bearing && bearing < 0) bearing = bearing + 360;
+  if (options.compareBearing && (bearing === null || typeof bearing === 'undefined')) {
+    return [];
+  }
+  bearing = normalizeAngle(bearing);
 
   var hits;
   if (!index.bush) {

@@ -1,6 +1,6 @@
 {
   "name": "@mapbox/probematch",
-  "version": "3.0.0",
+  "version": "3.0.0-rc0",
   "description": "A small module for matching probes to road networks",
   "keywords": [
     "gps",
@@ -48,5 +48,16 @@
     "geojson-random": "^0.4.0",
     "tap": "^5.1.1",
     "turf-point": "^2.0.1"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mapbox/probematch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mapbox/probematch/issues"
+  },
+  "homepage": "https://github.com/mapbox/probematch#readme"
 }

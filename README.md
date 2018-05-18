@@ -76,7 +76,7 @@ key | type | description
 --- | --- | ---
 **road** | Feature&lt;LineString&gt; | The geometry of a road that may have been matched
 **index** | Number | The start index of the segment closest to the probe may have matched (in the road's coordinates)
-**distance** | number | Distance (in miles) between the probe and the road
+**distance** | number | Distance (in kilometers) between the probe and the road
 
 ## matchTrace
 
