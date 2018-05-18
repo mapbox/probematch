@@ -1,6 +1,6 @@
 {
   "name": "@mapbox/probematch",
-  "version": "2.4.3",
+  "version": "3.0.0-rc1",
   "description": "A small module for matching probes to road networks",
   "keywords": [
     "gps",
@@ -36,6 +36,7 @@
   "author": "Tim Channell",
   "license": "ISC",
   "dependencies": {
+    "@turf/bbox": "^6.0.1",
     "cheap-ruler": "^2.4.0",
     "flatbush": "^3.0.0",
     "turf-linestring": "^1.0.0",
@@ -47,5 +48,16 @@
     "geojson-random": "^0.4.0",
     "tap": "^5.1.1",
     "turf-point": "^2.0.1"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mapbox/probematch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mapbox/probematch/issues"
+  },
+  "homepage": "https://github.com/mapbox/probematch#readme"
 }

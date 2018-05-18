@@ -1,6 +1,8 @@
 [
     {
         "distance": 0.00345,
+        "index": 1,
+        "bearing": 89.73211,
         "road": {
             "geometry": {
                 "coordinates": [
@@ -19,27 +21,8 @@
                 ],
                 "type": "LineString"
             },
-            "properties": {},
-            "type": "Feature"
-        },
-        "segment": {
-            "geometry": {
-                "coordinates": [
-                    [
-                        -77.03089714050293,
-                        38.90966913770327
-                    ],
-                    [
-                        -77.03032582998276,
-                        38.909671224829744
-                    ]
-                ],
-                "type": "LineString"
-            },
             "properties": {
-                "bearing": 89.7,
-                "roadId": 0,
-                "segmentId": 1
+              "roadId": 0
             },
             "type": "Feature"
         }

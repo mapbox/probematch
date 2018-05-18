@@ -1,6 +1,8 @@
 [
     {
         "distance": 0.00345,
+        "index": 1,
+        "bearing": 89.73211,
         "road": {
             "geometry": {
                 "coordinates": [
@@ -19,33 +21,16 @@
                 ],
                 "type": "LineString"
             },
-            "properties": {},
-            "type": "Feature"
-        },
-        "segment": {
-            "geometry": {
-                "coordinates": [
-                    [
-                        -77.03089714050293,
-                        38.90966913770327
-                    ],
-                    [
-                        -77.03032582998276,
-                        38.909671224829744
-                    ]
-                ],
-                "type": "LineString"
-            },
             "properties": {
-                "bearing": 89.7,
-                "roadId": 0,
-                "segmentId": 1
+              "roadId": 0
             },
             "type": "Feature"
         }
     },
     {
         "distance": 0.0043,
+        "index": 3,
+        "bearing": 178.01692,
         "road": {
             "geometry": {
                 "coordinates": [
@@ -84,92 +69,8 @@
                 ],
                 "type": "LineString"
             },
-            "properties": {},
-            "type": "Feature"
-        },
-        "segment": {
-            "geometry": {
-                "coordinates": [
-                    [
-                        -77.0303338766098,
-                        38.90966913770327
-                    ],
-                    [
-                        -77.03032851219177,
-                        38.9095480842622
-                    ]
-                ],
-                "type": "LineString"
-            },
             "properties": {
-                "bearing": 178.0,
-                "roadId": 2,
-                "segmentId": 3
-            },
-            "type": "Feature"
-        }
-    },
-    {
-        "distance": 0.0053,
-        "road": {
-            "geometry": {
-                "coordinates": [
-                    [
-                        -77.03002274036407,
-                        38.910103258690796
-                    ],
-                    [
-                        -77.03019171953201,
-                        38.909980118872745
-                    ],
-                    [
-                        -77.03030705451965,
-                        38.90980480079707
-                    ],
-                    [
-                        -77.0303338766098,
-                        38.90966913770327
-                    ],
-                    [
-                        -77.03032851219177,
-                        38.9095480842622
-                    ],
-                    [
-                        -77.03027486801147,
-                        38.90943120488183
-                    ],
-                    [
-                        -77.03018367290497,
-                        38.90929971534886
-                    ],
-                    [
-                        -77.02998518943787,
-                        38.90916822557233
-                    ]
-                ],
-                "type": "LineString"
-            },
-            "properties": {},
-            "type": "Feature"
-        },
-        "segment": {
-            "geometry": {
-                "coordinates": [
-                    [
-                        -77.03030705451965,
-                        38.90980480079707
-                    ],
-                    [
-                        -77.0303338766098,
-                        38.90966913770327
-                    ]
-                ],
-                "type": "LineString"
-            },
-            "properties": {
-                "bearing": 188.8,
-                "roadId": 2,
-                "segmentId": 2
+              "roadId": 2
             },
             "type": "Feature"
         }

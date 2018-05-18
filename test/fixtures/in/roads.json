@@ -3,7 +3,9 @@
   "features": [
     {
       "type": "Feature",
-      "properties": {},
+      "properties": {
+        "roadId": 0
+      },
       "geometry": {
         "type": "LineString",
         "coordinates": [
@@ -24,7 +26,9 @@
     },
     {
       "type": "Feature",
-      "properties": {},
+      "properties": {
+        "roadId": 1
+      },
       "geometry": {
         "type": "LineString",
         "coordinates": [
@@ -49,7 +53,9 @@
     },
     {
       "type": "Feature",
-      "properties": {},
+      "properties": {
+        "roadId": 2
+      },
       "geometry": {
         "type": "LineString",
         "coordinates": [
