@@ -1,6 +1,6 @@
 {
   "name": "@mapbox/probematch",
-  "version": "3.0.0-rc1",
+  "version": "3.0.0",
   "description": "A small module for matching probes to road networks",
   "keywords": [
     "gps",
