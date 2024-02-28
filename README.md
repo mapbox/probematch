@@ -19,16 +19,16 @@ Match a single GPS measurements (probe) or line of sequential GPS measurements (
 # configuration
 
 ```js
-var probematch = require('@mapbox/probematch');
+import probematch from '@mapbox/probematch';
 
-var roads = {
+const roads = {
   'type': 'FeatureCollection',
   'features': [
     // Linestring features representing the road network
   ]
 };
 
-var matcher = probematch(roads, {
+const matcher = probematch(roads, {
   compareBearing: true,
   maxBearingRange: 5,
   bidirectionalBearing: false,
@@ -50,12 +50,12 @@ maxProbeDistance | number | 0.01 | Maximum distance in kilometers that a probe m
 ## match
 
 ```js
-var probematch = require('@mapbox/probematch');
+import probematch from '@mapbox/probematch';
 
-var roads = /* FeatureCollection of road geometries */;
-var matcher = probematch(roads, {/* configuration */});
+const roads = /* FeatureCollection of road geometries */;
+const matcher = probematch(roads, {/* configuration */});
 
-var probe = {
+const probe = {
   type: 'Feature',
   geometry: {
     type: 'Point',
@@ -63,9 +63,9 @@ var probe = {
   }
 };
 
-var probeBearing  = 57; // probe's direction of travel in degrees
+const probeBearing  = 57; // probe's direction of travel in degrees
 
-var results = matcher(probe, probeBearing);
+const results = matcher(probe, probeBearing);
 ```
 
 The result of matching a single proble is an array of possible matches to the road network. Results are ordered by the probe's distance from the candidate road.
@@ -83,12 +83,12 @@ key | type | description
 
 
 ```js
-var probematch = require('@mapbox/probematch');
+import probematch from '@mapbox/probematch';
 
-var roads = /* FeatureCollection of road geometries */;
-var matcher = probematch(roads, {/* configuration */});
+const roads = /* FeatureCollection of road geometries */;
+const matcher = probematch(roads, {/* configuration */});
 
-var results = matcher.matchTrace(line);
+const results = matcher.matchTrace(line);
 ```
 
 `matchTrace` returns an array of `match` results. The order of results is the same as the order of the coordinates in the input trace. This means that the zeroeth element in the `matchTrace` result is an array of possible matches for the zeroeth coordinate, and so on.
