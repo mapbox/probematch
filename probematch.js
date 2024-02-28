@@ -1,10 +1,7 @@
-var Flatbush = require('flatbush');
-var xtend = require('xtend');
-var bbox = require('@turf/bbox').default;
-var cheapRuler = require('cheap-ruler');
-
-module.exports = probematch;
-module.exports.compareBearing = compareBearing;
+import Flatbush from 'flatbush';
+import xtend from 'xtend';
+import bbox from '@turf/bbox';
+import CheapRuler from 'cheap-ruler';
 
 /**
  * Index `roadNetwork` and return the matcher function
@@ -12,19 +9,19 @@ module.exports.compareBearing = compareBearing;
  * @param      {FeatureCollection}    roadNetwork  FeatureCollection of linestrings representing roads
  * @param      {object}               options      probematch configuration object
  */
-function probematch(roadNetwork, opts) {
-  var options = xtend({
+export default function probematch(roadNetwork, opts) {
+  const options = xtend({
     maxProbeDistance: 0.01, // max kilometers away a probe can be to be considered a match
     compareBearing: true, // should bearing be used to filter matches?
     maxBearingRange: 5, // max bearing degrees allowed between a probe and a potentially matching road
     bidirectionalBearing: false
   }, opts);
 
-  var network = roadNetwork.features;
+  const network = roadNetwork.features;
 
-  var index = indexNetwork(options, network);
+  const index = indexNetwork(options, network);
 
-  var matcher = function (probe, bearing) {
+  const matcher = function (probe, bearing) {
     return match(options, network, index, probe, bearing);
   };
   matcher.matchTrace = function (trace) {
@@ -46,16 +43,16 @@ function indexNetwork(options, network) {
   // flatbush will throw an error for an empty index.
   if (network.length === 0) return {segments: [], bush: null};
 
-  var bush = new Flatbush(network.length);
+  const bush = new Flatbush(network.length);
 
-  for (var i = 0; i < network.length; i++) {
-    var bounds = getFeatureBounds(network[i], options);
+  for (let i = 0; i < network.length; i++) {
+    const bounds = getFeatureBounds(network[i], options);
     bush.add(bounds[0], bounds[1], bounds[2], bounds[3]);
   }
 
   bush.finish();
 
-  return {network: network, bush: bush};
+  return {network, bush};
 }
 
 /**
@@ -70,9 +67,9 @@ function getFeatureBounds(feature, options) {
     throw new Error('Feature must be a LineString');
   }
 
-  var ruler = cheapRuler(feature.geometry.coordinates[0][1], 'kilometers');
-  var featureBbox = bbox(feature);
-  var ext = ruler.bufferBBox(featureBbox, options.maxProbeDistance);
+  const ruler = new CheapRuler(feature.geometry.coordinates[0][1], 'kilometers');
+  const featureBbox = bbox(feature);
+  const ext = ruler.bufferBBox(featureBbox, options.maxProbeDistance);
   return ext;
 }
 
@@ -88,22 +85,22 @@ function getFeatureBounds(feature, options) {
  * @return {array}  matches for the probe
  */
 function match(options, network, index, probe, bearing, ruler) {
-  var probeCoords = probe.geometry ? probe.geometry.coordinates : probe;
+  const probeCoords = probe.geometry ? probe.geometry.coordinates : probe;
 
-  if (!ruler) ruler = cheapRuler(probeCoords[1], 'kilometers');
+  if (!ruler) ruler = new CheapRuler(probeCoords[1], 'kilometers');
   if (options.compareBearing && (bearing === null || typeof bearing === 'undefined')) {
     return [];
   }
   bearing = normalizeAngle(bearing);
 
-  var hits;
+  let hits;
   if (!index.bush) {
     hits = [];
   } else {
     hits = index.bush.search(probeCoords[0], probeCoords[1], probeCoords[0], probeCoords[1]);
   }
 
-  var matches = filterMatchHits(options, network, hits, probeCoords, bearing, ruler);
+  const matches = filterMatchHits(options, network, hits, probeCoords, bearing, ruler);
 
   matches.sort(sortByDistance);
   return matches;
@@ -121,18 +118,18 @@ function match(options, network, index, probe, bearing, ruler) {
  * @param      {object}  ruler            A cheap-ruler instance
  */
 function filterMatchHits(options, network, hits, probeCoords, bearing, ruler) {
-  var matches = [];
-  for (var i = 0; i < hits.length; i++) {
-    var hit = hits[i];
-    var road = network[hit];
+  const matches = [];
+  for (let i = 0; i < hits.length; i++) {
+    const hit = hits[i];
+    const road = network[hit];
 
-    var p = ruler.pointOnLine(road.geometry.coordinates, probeCoords);
-    var distance = ruler.distance(probeCoords, p.point);
+    const p = ruler.pointOnLine(road.geometry.coordinates, probeCoords);
+    const distance = ruler.distance(probeCoords, p.point);
 
     if (distance > options.maxProbeDistance) continue;
 
-    var index = p.index;
-    var segmentBearing = ruler.bearing(
+    const index = p.index;
+    const segmentBearing = ruler.bearing(
       road.geometry.coordinates[index],
       road.geometry.coordinates[index + 1]
     );
@@ -144,7 +141,7 @@ function filterMatchHits(options, network, hits, probeCoords, bearing, ruler) {
       options.bidirectionalBearing
     )) continue;
 
-    matches.push({road: road, distance: distance, index: index, bearing: segmentBearing});
+    matches.push({road, distance, index, bearing: segmentBearing});
   }
   return matches;
 }
@@ -159,13 +156,13 @@ function filterMatchHits(options, network, hits, probeCoords, bearing, ruler) {
  * @return     {array}   matches for each point of `trace`
  */
 function matchTrace(options, network, index, trace) {
-  var coords = trace.coordinates || trace.geometry.coordinates;
-  var lastbearing;
-  var results = [];
+  const coords = trace.coordinates || trace.geometry.coordinates;
+  let lastbearing;
+  const results = [];
 
-  var ruler = cheapRuler(coords[0][1], 'kilometers');
+  const ruler = new CheapRuler(coords[0][1], 'kilometers');
 
-  for (var i = 0; i < coords.length; i++) {
+  for (let i = 0; i < coords.length; i++) {
     if (i < coords.length - 1) lastbearing = ruler.bearing(coords[i], coords[i + 1]);
 
     results.push(match(options, network, index, coords[i], lastbearing, ruler));
@@ -187,21 +184,21 @@ function matchTrace(options, network, index, trace) {
  * @param      {boolean}  allowReverse   Should opposite bearings be allowed to match?
  * @return     {boolean}  Whether or not base and bearing match
  */
-function compareBearing(base, bearing, range, allowReverse) {
+export function compareBearing(base, bearing, range, allowReverse) {
 
   // map base and bearing into positive modulo 360 space
-  var normalizedBase = normalizeAngle(base);
-  var normalizedBearing = normalizeAngle(bearing);
+  const normalizedBase = normalizeAngle(base);
+  const normalizedBearing = normalizeAngle(bearing);
 
-  var min = normalizeAngle(normalizedBase - range);
-  var max = normalizeAngle(normalizedBase + range);
+  const min = normalizeAngle(normalizedBase - range);
+  const max = normalizeAngle(normalizedBase + range);
 
   if (min < max) {
     if (min <= normalizedBearing && normalizedBearing <= max) return true;
   } else if (min <= normalizedBearing || normalizedBearing <= max) return true;
 
   if (allowReverse)
-    return module.exports.compareBearing(normalizedBase + 180, bearing, range);
+    return compareBearing(normalizedBase + 180, bearing, range);
 
   return false;
 }
